@@ -1769,7 +1769,7 @@ colorette@^1.2.1:
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.2.1.tgz#4d0b921325c14faf92633086a536db6e89564b1b"
   integrity sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==
 
-colors@^1.0.3, colors@^1.1.2:
+colors@^1.1.2:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
   integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
@@ -2377,13 +2377,10 @@ expect@^26.6.2:
     jest-message-util "^26.6.2"
     jest-regex-util "^26.0.0"
 
-express-list-routes@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/express-list-routes/-/express-list-routes-0.1.4.tgz#c65c31c3fb619c79c0543f7b4ec4e83056ece616"
-  integrity sha1-xlwxw/thnHnAVD97TsToMFbs5hY=
-  dependencies:
-    colors "^1.0.3"
-    lodash "^3.0.0"
+express-list-endpoints@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/express-list-endpoints/-/express-list-endpoints-5.0.0.tgz#819b6ff0fb96d975b02cacb704757b200c4f4dc3"
+  integrity sha512-bjypzWA7AQ64VNLbQ3GqwDzLxqK1NIHFRJvFDb7wg0S7YwquI8l8XZsmF0yiEA22gN+p+G6+1KDcXxb6Dn3OaA==
 
 express@4.17.1:
   version "4.17.1"
@@ -3853,11 +3850,6 @@ lodash.toarray@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.toarray/-/lodash.toarray-4.4.0.tgz#24c4bfcd6b2fba38bfd0594db1179d8e9b656561"
   integrity sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
-
-lodash@^3.0.0:
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-  integrity sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
 
 lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19:
   version "4.17.20"

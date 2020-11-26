@@ -1,0 +1,13 @@
+[
+  { "path": "/", "methods": ["GET"], "middleware": ["anonymous"] },
+  {
+    "path": "/coffees",
+    "methods": ["GET", "POST"],
+    "middleware": ["anonymous"]
+  },
+  {
+    "path": "/coffees/:id",
+    "methods": ["GET", "DELETE", "PATCH", "PUT"],
+    "middleware": ["anonymous"]
+  }
+]
