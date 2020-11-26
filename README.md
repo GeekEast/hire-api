@@ -11,3 +11,9 @@ nest g controller modules/abc --dry-run # won't generate controllers but will gi
 
 
 - if you simply `throw 'A random Errr'`, it will give a 500 internal server error to the client.
+
+- generate dto to declare type on received body
+```javascript
+// don't have to add .ts
+nest g class coffees/dto/create-coffee.dto --no-spec
+```

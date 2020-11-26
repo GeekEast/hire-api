@@ -10,6 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CoffeesService } from './coffees.service';
+import { CreateCoffeeDto } from './dto/create-coffee.dto';
 
 @Controller('coffees')
 export class CoffeesController {
@@ -28,9 +29,9 @@ export class CoffeesController {
   }
 
   @Post('/')
-  create(@Body() body) {
-    this.coffesService.create(body);
-    return `${JSON.stringify(body)} has been created as a coffee.`;
+  create(@Body() createCoffeeDto: CreateCoffeeDto) {
+    this.coffesService.create(createCoffeeDto);
+    return `${JSON.stringify(createCoffeeDto)} has been created as a coffee.`;
   }
 
   @Delete('/:id')
