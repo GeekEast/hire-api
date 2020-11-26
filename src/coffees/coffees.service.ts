@@ -1,7 +1,7 @@
 import { Coffee } from './entities/coffee.entity';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import data from 'data/data.json';
-
+import { isNil } from 'lodash';
 @Injectable()
 export class CoffeesService {
   private coffees: Coffee[] = data.coffees;
@@ -19,7 +19,16 @@ export class CoffeesService {
   }
 
   show(id: string) {
-    return this.coffees.find((c) => c.id === parseInt(id));
+    const coffee = this.coffees.find((c) => c.id === parseInt(id));
+
+    if (isNil(coffee)) {
+      throw new HttpException(
+        `Coffee ${id} is not found.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return coffee;
   }
 
   create(body: Coffee) {
