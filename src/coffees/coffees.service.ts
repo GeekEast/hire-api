@@ -4,11 +4,9 @@ import data from 'data/data.json';
 
 @Injectable()
 export class CoffeesService {
-  // private coffees: Coffee[] = generateSampleData();
   private coffees: Coffee[] = data.coffees;
 
   index(limit: number, offset: number) {
-    console.log(this.coffees.length);
     if (
       limit === null ||
       limit === undefined ||
@@ -16,7 +14,7 @@ export class CoffeesService {
       offset === undefined
     )
       return [];
-    
+
     return this.coffees.slice(offset, offset + limit);
   }
 

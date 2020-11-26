@@ -18,9 +18,8 @@ export class CoffeesController {
 
   @Get('/')
   index(@Query() paginationQuery) {
-    console.log(paginationQuery);
     const { limit, offset } = paginationQuery;
-    return this.coffesService.index(limit, offset);
+    return this.coffesService.index(parseInt(limit), parseInt(offset));
   }
 
   @Get('/:id')
