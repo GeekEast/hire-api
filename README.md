@@ -7,3 +7,7 @@ nest g controller modules/abc --dry-run # won't generate controllers but will gi
 
 
 - there is no way in `Nest.js` to list all routes like `rails routes` in ROR.
+
+
+
+- if you simply `throw 'A random Errr'`, it will give a 500 internal server error to the client.
