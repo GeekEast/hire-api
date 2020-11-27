@@ -20,4 +20,7 @@ nest g class coffees/dto/create-coffee.dto --no-spec
 
 ### DTO
 - type-safe with shape definition
-- still need validation
+- still need validation added using decorators
+
+### Validation
+- failed validation will return status code as `Bad Request: 400` with message.
