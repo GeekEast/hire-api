@@ -20,5 +20,5 @@ export class Coffee {
     cascade: true,
   })
   @JoinTable()
-  flavors: string[];
+  flavors: Flavor[];
 }

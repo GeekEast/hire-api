@@ -1,3 +1,4 @@
+import { Flavor } from './entities/flavor.entity';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { Coffee } from './entities/coffee.entity';
 import {
@@ -15,6 +16,8 @@ export class CoffeesService {
   constructor(
     @InjectRepository(Coffee)
     private readonly coffeeRepository: Repository<Coffee>,
+    @InjectRepository(Coffee)
+    private readonly flavorRepository: Repository<Flavor>,
   ) {}
 
   index(take: number, offset: number) {
@@ -40,12 +43,24 @@ export class CoffeesService {
   }
 
   async create(body: CreateCoffeeDto) {
-    const coffee = await this.coffeeRepository.create(body);
+    const flavors = await Promise.all(
+      body.flavors.map(({ name }) => this.preloadFlavorByName(name)),
+    );
+    const coffee = await this.coffeeRepository.create({ ...body, flavors });
     return this.coffeeRepository.save(coffee);
   }
 
   async update(id: number, body: UpdateCoffeeDto) {
-    const coffee = await this.coffeeRepository.preload({ id: +id, ...body });
+    const flavors =
+      !isNil(body.flavors) &&
+      (await Promise.all(
+        body.flavors.map(({ name }) => this.preloadFlavorByName(name)),
+      ));
+    const coffee = await this.coffeeRepository.preload({
+      id: +id,
+      ...body,
+      flavors,
+    });
     if (isNil(coffee)) {
       throw new NotFoundException(`Coffee ${id} not founed`);
     }
@@ -55,5 +70,11 @@ export class CoffeesService {
   async remove(id: number) {
     const coffee = await this.coffeeRepository.findOne(id);
     return this.coffeeRepository.remove(coffee);
+  }
+
+  private async preloadFlavorByName(name: string): Promise<Flavor> {
+    const existingFlavor = await this.flavorRepository.findOne({ name });
+    if (!isNil(existingFlavor)) return existingFlavor;
+    return this.flavorRepository.create({ name });
   }
 }
