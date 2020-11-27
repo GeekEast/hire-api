@@ -42,7 +42,7 @@ export class CoffeesController {
 
   @Patch('/:id')
   partial_update(@Param() params, @Body() body) {
-    this.coffesService.partial_update(params.id, body);
+    this.coffesService.update(params.id, body);
     return `The Coffee #${params.id} is updated`;
   }
 

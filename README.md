@@ -17,3 +17,7 @@ nest g controller modules/abc --dry-run # won't generate controllers but will gi
 // don't have to add .ts
 nest g class coffees/dto/create-coffee.dto --no-spec
 ```
+
+### DTO
+- type-safe with shape definition
+- still need validation
