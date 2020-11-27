@@ -24,8 +24,8 @@ export class CoffeesController {
   }
 
   @Get('/:id')
-  show(@Param() params) {
-    return this.coffesService.show(params.id);
+  show(@Param('id') id: number) {
+    return this.coffesService.show(id);
   }
 
   @Post('/')
@@ -35,20 +35,20 @@ export class CoffeesController {
   }
 
   @Delete('/:id')
-  remove(@Param() params) {
-    this.coffesService.remove(params.id);
-    return `The Coffee #${params.id} is removed`;
+  remove(@Param('id') id: number) {
+    this.coffesService.remove(id);
+    return `The Coffee #${id} is removed`;
   }
 
   @Patch('/:id')
-  partial_update(@Param() params, @Body() body) {
-    this.coffesService.update(params.id, body);
-    return `The Coffee #${params.id} is updated`;
+  partial_update(@Param('id') id: number, @Body() body) {
+    this.coffesService.update(id, body);
+    return `The Coffee #${id} is updated`;
   }
 
   @Put('/:id')
-  update(@Param() params, @Body() body) {
-    this.coffesService.update(params.id, body);
-    return `The Coffee #${params.id} is updated`;
+  update(@Param('id') id: number, @Body() body) {
+    this.coffesService.update(id, body);
+    return `The Coffee #${id} is updated`;
   }
 }

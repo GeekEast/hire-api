@@ -20,8 +20,8 @@ export class CoffeesService {
     return this.coffees.slice(offset, offset + limit);
   }
 
-  show(id: string) {
-    const coffee = this.coffees.find((c) => c.id === parseInt(id));
+  show(id: number) {
+    const coffee = this.coffees.find((c) => c.id === id);
 
     if (isNil(coffee)) {
       throw new HttpException(
@@ -40,12 +40,12 @@ export class CoffeesService {
     return coffee;
   }
 
-  remove(id: string) {
-    this.coffees = this.coffees.filter((c) => c.id !== parseInt(id));
+  remove(id: number) {
+    this.coffees = this.coffees.filter((c) => c.id !== id);
   }
-  update(id: string, body: UpdateCoffeeDto) {
+  update(id: number, body: UpdateCoffeeDto) {
     this.coffees = this.coffees.map((c) => {
-      if (c.id === parseInt(id)) {
+      if (c.id === id) {
         return { ...c, ...body };
       }
     });
