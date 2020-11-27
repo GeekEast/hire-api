@@ -24,3 +24,5 @@ nest g class coffees/dto/create-coffee.dto --no-spec
 
 ### Validation
 - failed validation will return status code as `Bad Request: 400` with message.
+- `whitelist`: will strip out all unwanted attributes from `body`.
+- `forbidNonWhitelisted`: will throw an error is any unwanted params are passed in `body`.

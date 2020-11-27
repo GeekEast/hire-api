@@ -30,6 +30,7 @@ export class CoffeesController {
 
   @Post('/')
   create(@Body() createCoffeeDto: CreateCoffeeDto) {
+    // createCoffeeDto is only shape of CreateeCoffeeDto, but not instance
     return this.coffesService.create(createCoffeeDto);
   }
 
