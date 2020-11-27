@@ -7,7 +7,10 @@ import { CoffeesModule } from './coffees/coffees.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: '/env',
+      ignoreEnvVars: false, // for prodction is true. since envs will be in the ebs, for example
+    }),
     CoffeesModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
