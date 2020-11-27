@@ -16,7 +16,7 @@ import { CoffeesModule } from './coffees/coffees.module';
       database: 'hire_db',
       autoLoadEntities: true,
       // will automatically generate tables for @Entities()
-      synchronize: true, // disable this for production
+      synchronize: false, // disable this for production
     }),
   ],
   controllers: [AppController],

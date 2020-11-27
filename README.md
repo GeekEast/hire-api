@@ -49,4 +49,20 @@ nest g class coffees/entities/flavor.entity --no-spec
 - validation here
 
 ### entity
-- definition for records passed between api and database.˘
+- definition for records passed between api and database.
+
+### Migrations
+- used to modify database in production, won't delete table, it's safe and convenient.
+- create migrations
+```
+npx typeorm migration:create -n CoffeeRefactor
+npx typeorm migration:run
+npx typeorm migration:revert
+```
+- generrate migrations automatically
+```sh
+# 1. create migration
+yarn build
+npx typeorm migration:generate -n CoffeeRefactor
+
+```
