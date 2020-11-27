@@ -20,8 +20,7 @@ export class CoffeesController {
 
   @Get('/')
   index(@Query() paginationQuery: PaginationDto) {
-    const { take, offset } = paginationQuery;
-    return this.coffesService.index(take, offset);
+    return this.coffesService.index(paginationQuery);
   }
 
   @Get('/:id')
