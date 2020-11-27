@@ -33,3 +33,6 @@ nest g class coffees/dto/create-coffee.dto --no-spec
 # run the docker containers in detached mode (in the background);
 docker-compose up -d
 ```
+
+### Entity
+- represent a relationship between typescript class and a database table.
