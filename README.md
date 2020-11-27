@@ -44,4 +44,9 @@ nest g class coffees/entities/flavor.entity --no-spec
 - used manipulate the database
 
 
-### Cascading Insert and Updates
+### dto
+- definition for objected transferred over the internet
+- validation here
+
+### entity
+- definition for records passed between api and database.˘

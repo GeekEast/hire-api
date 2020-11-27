@@ -20,10 +20,12 @@ export class CoffeesService {
     private readonly flavorRepository: Repository<Flavor>,
   ) {}
 
-  index(take: number, offset: number) {
-    if (isNil(take) || isNil(offset)) return [];
-
-    const coffees = this.coffeeRepository.find({ relations: ['flavors'] });
+  async index(take: number, offset: number) {
+    const coffees = await this.coffeeRepository.find({
+      relations: ['flavors'],
+      skip: offset || 0,
+      take: take || 20,
+    });
     return coffees;
   }
 

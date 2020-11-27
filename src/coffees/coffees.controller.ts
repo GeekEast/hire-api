@@ -1,3 +1,4 @@
+import { PaginationDto } from './../common/dto/pagination.dto';
 import {
   Body,
   Controller,
@@ -18,9 +19,9 @@ export class CoffeesController {
   constructor(private readonly coffesService: CoffeesService) {}
 
   @Get('/')
-  index(@Query() paginationQuery) {
-    const { limit, offset } = paginationQuery;
-    return this.coffesService.index(parseInt(limit), parseInt(offset));
+  index(@Query() paginationQuery: PaginationDto) {
+    const { take, offset } = paginationQuery;
+    return this.coffesService.index(take, offset);
   }
 
   @Get('/:id')
