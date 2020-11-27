@@ -30,8 +30,7 @@ export class CoffeesController {
 
   @Post('/')
   create(@Body() createCoffeeDto: CreateCoffeeDto) {
-    this.coffesService.create(createCoffeeDto);
-    return `${JSON.stringify(createCoffeeDto)} has been created as a coffee.`;
+    return this.coffesService.create(createCoffeeDto);
   }
 
   @Delete('/:id')

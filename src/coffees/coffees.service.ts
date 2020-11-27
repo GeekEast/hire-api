@@ -35,7 +35,9 @@ export class CoffeesService {
 
   create(body: CreateCoffeeDto) {
     const id = this.coffees.length;
-    this.coffees.push({ ...body, id });
+    const coffee = { ...body, id };
+    this.coffees.push(coffee);
+    return coffee;
   }
 
   remove(id: string) {
