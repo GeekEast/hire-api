@@ -36,7 +36,9 @@ docker-compose up -d
 
 ### Entity
 - represent a relationship between typescript class and a database table.
-
+```
+nest g class coffees/entities/flavor.entity --no-spec
+```
 
 ### Repository Pattern
 - used manipulate the database
