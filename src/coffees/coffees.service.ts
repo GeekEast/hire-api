@@ -1,16 +1,22 @@
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { Coffee } from './entities/coffee.entity';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { isNil } from 'lodash';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 @Injectable()
 export class CoffeesService {
-  constructor(@InjectRepository(Coffee)
-    private readonly coffeeRepository: Repository<Coffee>
-  ){}
-  
+  constructor(
+    @InjectRepository(Coffee)
+    private readonly coffeeRepository: Repository<Coffee>,
+  ) {}
+
   index(limit: number, offset: number) {
     if (
       limit === null ||
@@ -19,12 +25,12 @@ export class CoffeesService {
       offset === undefined
     )
       return [];
-
-    return this.coffeeRepository.
+    const coffees = this.coffeeRepository.find();
+    return coffees;
   }
 
-  show(id: number) {
-    const coffee = this.coffees.find((c) => c.id === id);
+  async show(id: number) {
+    const coffee = await this.coffeeRepository.findOne(id);
 
     if (isNil(coffee)) {
       throw new HttpException(
@@ -36,21 +42,21 @@ export class CoffeesService {
     return coffee;
   }
 
-  create(body: CreateCoffeeDto) {
-    const id = this.coffees.length;
-    const coffee = { ...body, id };
-    this.coffees.push(coffee);
-    return coffee;
+  async create(body: CreateCoffeeDto) {
+    const coffee = await this.coffeeRepository.create(body);
+    return this.coffeeRepository.save(coffee);
   }
 
-  remove(id: number) {
-    this.coffees = this.coffees.filter((c) => c.id !== id);
+  async update(id: number, body: UpdateCoffeeDto) {
+    const coffee = await this.coffeeRepository.preload({ id: +id, ...body });
+    if (isNil(coffee)) {
+      throw new NotFoundException(`Coffee ${id} not founed`);
+    }
+    return this.coffeeRepository.save(coffee);
   }
-  update(id: number, body: UpdateCoffeeDto) {
-    this.coffees = this.coffees.map((c) => {
-      if (c.id === id) {
-        return { ...c, ...body };
-      }
-    });
+
+  async remove(id: number) {
+    const coffee = await this.coffeeRepository.findOne(id);
+    return this.coffeeRepository.remove(coffee);
   }
 }
