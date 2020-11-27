@@ -36,3 +36,7 @@ docker-compose up -d
 
 ### Entity
 - represent a relationship between typescript class and a database table.
+
+
+### Repository Pattern
+- used manipulate the database

@@ -1,13 +1,16 @@
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { Coffee } from './entities/coffee.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import data from 'data/data.json';
 import { isNil } from 'lodash';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 @Injectable()
 export class CoffeesService {
-  private coffees: Coffee[] = data.coffees;
-
+  constructor(@InjectRepository(Coffee)
+    private readonly coffeeRepository: Repository<Coffee>
+  ){}
+  
   index(limit: number, offset: number) {
     if (
       limit === null ||
@@ -17,7 +20,7 @@ export class CoffeesService {
     )
       return [];
 
-    return this.coffees.slice(offset, offset + limit);
+    return this.coffeeRepository.
   }
 
   show(id: number) {
