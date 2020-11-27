@@ -42,3 +42,6 @@ nest g class coffees/entities/flavor.entity --no-spec
 
 ### Repository Pattern
 - used manipulate the database
+
+
+### Cascading Insert and Updates
