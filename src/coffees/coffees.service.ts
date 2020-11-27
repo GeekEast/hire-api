@@ -17,20 +17,17 @@ export class CoffeesService {
     private readonly coffeeRepository: Repository<Coffee>,
   ) {}
 
-  index(limit: number, offset: number) {
-    if (
-      limit === null ||
-      limit === undefined ||
-      offset === null ||
-      offset === undefined
-    )
-      return [];
-    const coffees = this.coffeeRepository.find();
+  index(take: number, offset: number) {
+    if (isNil(take) || isNil(offset)) return [];
+
+    const coffees = this.coffeeRepository.find({ relations: ['flavors'] });
     return coffees;
   }
 
   async show(id: number) {
-    const coffee = await this.coffeeRepository.findOne(id);
+    const coffee = await this.coffeeRepository.findOne(id, {
+      relations: ['flavors'],
+    });
 
     if (isNil(coffee)) {
       throw new HttpException(
