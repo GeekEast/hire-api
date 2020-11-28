@@ -7,13 +7,13 @@ export class User extends Document {
   name: string;
 
   @Prop()
-  useranme: string;
+  username: string;
 
   @Prop()
   hashed_password: string;
 
   @Prop()
-  roles: string;
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,3 +1,4 @@
+import { UsersService } from 'users/users.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
