@@ -18,7 +18,7 @@ export class AuthController {
   @Post('/signin')
   @HttpCode(HttpStatus.OK)
   async signin(@Request() req) {
-    return this.authService.login(req.user);
+    return this.authService.generateJwt(req.user);
   }
 
   @Post('/signup')
