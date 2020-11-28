@@ -25,10 +25,6 @@ export class AuthController {
 
   @Post('/signup')
   async signup(@Body() createUserDto: CreateUserDto) {
-    console.log('/');
-  }
-  @Get('/signout')
-  async signout() {
-    console.log('/');
+    return this.authService.signup(createUserDto);
   }
 }

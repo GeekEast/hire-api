@@ -3,16 +3,16 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class User extends Document {
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true, unique: true, index: true })
   username: string;
 
-  @Prop()
+  @Prop({ required: true })
   hashed_password: string;
 
-  @Prop()
+  @Prop({ required: true, enum: ['user', 'admin'] })
   role: string;
 }
 

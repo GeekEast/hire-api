@@ -11,6 +11,9 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     MongooseModule.forRoot(
       'mongodb://api_user:api1234@localhost:27017/api_dev_db',
+      {
+        useCreateIndex: true,
+      },
     ),
     CompaniesModule,
     UsersModule,

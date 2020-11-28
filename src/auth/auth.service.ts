@@ -30,8 +30,7 @@ export class AuthService {
     };
   }
 
-  async signup(createUserDto: CreateUserDto) {
-    this.usersService
-
+  signup(createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
   }
 }

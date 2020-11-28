@@ -17,9 +17,9 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const { password } = createUserDto;
-    // TODO: store SaltOrRound in Env
     const hashed_password = await bcrypt.hash(password, 10);
-    const role = createUserDto.role || 'user';
+    // TODO: deal with admin users
+    const role = 'user';
     const user = await this.userModel.create({
       ...createUserDto,
       hashed_password,
