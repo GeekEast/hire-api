@@ -1,10 +1,11 @@
 import bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create.dto';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
+import { UserAccountExistException } from 'exceptions';
 import { UserShowDto } from './dto/show.dto';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -18,15 +19,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const { username, password } = createUserDto;
     const exist_user = await this.userModel.find({ username });
-    if (exist_user)
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'User account already exist.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-
+    if (exist_user) throw new UserAccountExistException();
     const hashed_password = await bcrypt.hash(password, 10);
     const role = 'user'; // TODO: how to create admins
     const user = await this.userModel.create({
