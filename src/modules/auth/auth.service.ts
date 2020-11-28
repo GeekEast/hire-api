@@ -1,8 +1,8 @@
 import { CreateUserDto } from './../users/dto/create.dto';
-import { isNil } from 'lodash';
 import { Injectable } from '@nestjs/common';
-import { UsersService } from 'users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from 'modules/users/users.service';
+import { isNil } from 'lodash';
 
 @Injectable()
 export class AuthService {

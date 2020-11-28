@@ -1,6 +1,6 @@
+import { AppModule } from 'modules/application/app.module';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
 import { saveRoutesToJson } from 'utils';
 
 async function bootstrap() {

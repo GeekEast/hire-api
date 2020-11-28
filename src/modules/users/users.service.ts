@@ -1,6 +1,6 @@
 import { CreateUserDto } from './dto/create.dto';
 import { UserShowDto } from './dto/show.dto';
-import { User } from 'users/schemas/user.schema';
+import { User } from './schemas/user.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
