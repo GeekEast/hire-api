@@ -10,7 +10,7 @@ export class User extends Document {
   useranme: string;
 
   @Prop()
-  password: string;
+  hashed_password: string;
 
   @Prop()
   roles: string;
