@@ -8,7 +8,12 @@ import { CoffeesModule } from './coffees/coffees.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '/env',
+      envFilePath: [
+        '.local.env',
+        '.development.env',
+        '.production.env',
+        '.env',
+      ], // left got higher precedence
       ignoreEnvVars: false, // for prodction is true. since envs will be in the ebs, for example
     }),
     CoffeesModule,

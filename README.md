@@ -66,3 +66,24 @@ yarn build
 npx typeorm migration:generate -n CoffeeRefactor
 
 ```
+
+
+### Exception Filter
+- handle global exception
+
+### Pipes
+- trasform data
+- validate data
+
+
+### Guards
+- Authentication
+- Authorization
+- Roles
+- ACL
+
+
+### Interceptors
+- bind extra logic before or after method execution
+- transform results returned from a method.
+- override method execution: caching responses
