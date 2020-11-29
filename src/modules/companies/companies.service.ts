@@ -9,6 +9,10 @@ export class CompaniesService {
     @InjectModel(Company.name) private companyModel: Model<Company>,
   ) {}
 
+  findById(id: string) {
+    return this.companyModel.findById(id);
+  }
+
   findAll() {
     return this.companyModel.find().exec();
   }
