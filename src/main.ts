@@ -5,7 +5,6 @@ import { saveRoutesToJson } from 'utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   // add pipes
   app.useGlobalPipes(
     new ValidationPipe({

@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { Controller, Get } from '@nestjs/common';
+import { SkipJwt } from 'decorators/SkipJwt';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
+  @SkipJwt()
   getHello(): string {
-    return this.appService.getHello();
+    return 'Welcome to the Hire API.';
   }
 }
