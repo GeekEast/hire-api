@@ -1,3 +1,4 @@
+import { IndexCompanyDto } from './dto/indexCompnay.dto';
 import {
   Body,
   Controller,
@@ -7,6 +8,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { UpdateCompanyDto } from './dto/updateCompany.dto';
@@ -15,8 +17,8 @@ import { UpdateCompanyDto } from './dto/updateCompany.dto';
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
   @Get()
-  index() {
-    return this.companiesService.findAll();
+  index(@Query() indexCompanyDto: IndexCompanyDto) {
+    return this.companiesService.findAll(indexCompanyDto);
   }
 
   @Post()

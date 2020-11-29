@@ -1,3 +1,4 @@
+import { IndexCompanyDto } from './dto/indexCompnay.dto';
 import { Company } from './schemas/company.schema';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,9 +17,9 @@ export class CompaniesService {
     return company;
   }
 
-  // TODO：Add Pagination
-  async findAll() {
-    return await this.companyModel.find();
+  async findAll(indexCompanyDto: IndexCompanyDto) {
+    const { skip, limit } = indexCompanyDto;
+    return await this.companyModel.find().limit(limit).skip(skip);
   }
 
   async create(body: any) {
