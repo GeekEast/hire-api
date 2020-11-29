@@ -2,6 +2,7 @@ import { Company } from './schemas/company.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { UpdateCompanyDto } from './dto/updateCompany.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -13,12 +14,23 @@ export class CompaniesService {
     return this.companyModel.findById(id);
   }
 
-  findAll() {
-    return this.companyModel.find().exec();
+  async findAll() {
+    return await this.companyModel.find();
   }
 
   create(body: any) {
     const coffee = new this.companyModel(body);
     return coffee.save();
+  }
+
+  async update(id: string, updateCompanyDto: UpdateCompanyDto) {
+    return await this.companyModel.findOneAndUpdate(
+      { _id: id },
+      updateCompanyDto,
+    );
+  }
+
+  async delete(id: string) {
+    return await this.companyModel.findOneAndDelete({ _id: id });
   }
 }
