@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
+import { AuthenticatedUser } from './dto/authenticated_user.dto';
 import { CreateUserDto } from 'modules/users/dto/create.dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { isNil } from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login.dto';
-import { User } from 'modules/users/schemas/user.schema';
 import { UsersService } from 'modules/users/users.service';
 
 @Injectable()
@@ -14,12 +14,15 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser({ username, password }: LoginUserDto): Promise<User> {
+  async validateUserByPassword({
+    username,
+    password,
+  }: LoginUserDto): Promise<AuthenticatedUser> {
     const user = await this.usersService.findOne({ username });
     if (!user) throw new UnauthorizedException();
     const passed = await bcrypt.compare(password, user.hashed_password);
-    if (passed) return user;
-    return null;
+    if (!passed) throw new UnauthorizedException();
+    return { username: user.username, userId: user._id };
   }
 
   async generateJwt(user: {
