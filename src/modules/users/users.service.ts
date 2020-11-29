@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import { UserAccountExistException } from 'exceptions';
 import { UserShowDto } from './dto/show.dto';
+import { isEmpty } from 'lodash';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -19,7 +20,8 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const { username, password } = createUserDto;
     const exist_user = await this.userModel.find({ username });
-    if (exist_user) throw new UserAccountExistException();
+    if (!isEmpty(exist_user)) throw new UserAccountExistException();
+
     const hashed_password = await bcrypt.hash(password, 10);
     const role = 'user'; // TODO: how to create admins
     const user = await this.userModel.create({
