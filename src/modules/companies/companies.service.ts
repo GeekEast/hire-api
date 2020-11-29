@@ -1,5 +1,5 @@
 import { Company } from './schemas/company.schema';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UpdateCompanyDto } from './dto/updateCompany.dto';
@@ -10,27 +10,29 @@ export class CompaniesService {
     @InjectModel(Company.name) private companyModel: Model<Company>,
   ) {}
 
-  findById(id: string) {
-    return this.companyModel.findById(id);
+  async findById(id: string) {
+    const company = await this.companyModel.findById(id);
+    if (!company) throw new NotFoundException();
+    return company;
   }
 
+  // TODO：Add Pagination
   async findAll() {
     return await this.companyModel.find();
   }
 
-  create(body: any) {
+  async create(body: any) {
     const coffee = new this.companyModel(body);
-    return coffee.save();
+    return await coffee.save();
   }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto) {
-    return await this.companyModel.findOneAndUpdate(
-      { _id: id },
-      updateCompanyDto,
-    );
+    await this.findById(id);
+    return await this.companyModel.findByIdAndUpdate(id, updateCompanyDto);
   }
 
   async delete(id: string) {
-    return await this.companyModel.findOneAndDelete({ _id: id });
+    await this.findById(id);
+    return await this.companyModel.findByIdAndDelete(id);
   }
 }

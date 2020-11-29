@@ -34,7 +34,6 @@ export class CompaniesController {
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ) {
-    console.log(id, updateCompanyDto);
     return this.companiesService.update(id, updateCompanyDto);
   }
 
@@ -44,7 +43,7 @@ export class CompaniesController {
   }
 
   @Delete('/:id')
-  remote(@Param('id') id: string) {
+  remove(@Param('id') id: string) {
     return this.companiesService.delete(id);
   }
 }
