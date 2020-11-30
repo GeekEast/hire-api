@@ -1,3 +1,4 @@
+import { ListUserPaginationDto } from './dto/list.dt';
 import bcrypt from 'bcrypt';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateUserDto } from './dto/create.dto';
@@ -20,10 +21,20 @@ export class UsersService {
     private readonly companyService: CompaniesService,
   ) {}
 
-  async findOne(userShowDto: UserShowDto) {
+  async findByUsername(userShowDto: UserShowDto) {
     const { username } = userShowDto;
     const user = await this.userModel.findOne({ username });
     return user;
+  }
+
+  async findById(id: string) {
+    const user = await this.userModel.findById(id);
+    return user;
+  }
+
+  async findAll(listUserPagination: ListUserPaginationDto) {
+    const { limit, skip } = listUserPagination;
+    return await this.userModel.find().limit(limit).skip(skip);
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -51,7 +62,7 @@ export class UsersService {
   }
 
   async update(userShowDto: UserShowDto, updateUserDto: UpdateUserDto) {
-    const { id, company: prevCompany } = await this.findOne(userShowDto);
+    const { id, company: prevCompany } = await this.findByUsername(userShowDto);
     const {
       password,
       confirmed_password,

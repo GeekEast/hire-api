@@ -16,6 +16,7 @@ import {
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
+
   @Get()
   index(@Query() indexCompanyDto: IndexCompanyDto) {
     return this.companiesService.findAll(indexCompanyDto);

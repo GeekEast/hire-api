@@ -1,8 +1,7 @@
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'modules/users/dto/create.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { SkipJwt } from 'decorators/SkipJwt';
-import { UpdateUserDto } from 'modules/users/dto/update.dto';
+import { SkipJwt } from 'modules/auth/decorators/skipJwt.decorator';
 import {
   Controller,
   HttpCode,
@@ -12,7 +11,6 @@ import {
   HttpStatus,
   Body,
   Get,
-  Param,
 } from '@nestjs/common';
 @Controller()
 export class AuthController {
@@ -36,19 +34,6 @@ export class AuthController {
   @Get('/auth/validate')
   @HttpCode(HttpStatus.OK)
   authenticate() {
-    return;
-  }
-
-  @Post('/my_account_update')
-  @HttpCode(HttpStatus.OK)
-  async updateMyAccount(@Body() updateUserDto: UpdateUserDto, @Request() req) {
-    return this.authService.updateMyAccountByUsername(req.user, updateUserDto);
-  }
-
-  // TODO: add role-based authorization
-  @Post('/account_update/:id')
-  @HttpCode(HttpStatus.OK)
-  updateAccount(@Param('id') id: string, UpdateUserDto) {
     return;
   }
 }

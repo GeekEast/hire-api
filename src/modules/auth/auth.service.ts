@@ -21,7 +21,7 @@ export class AuthService {
     username,
     password,
   }: LoginUserDto): Promise<AuthenticatedUser> {
-    const user = await this.usersService.findOne({ username });
+    const user = await this.usersService.findByUsername({ username });
     if (!user) throw new UnauthorizedException();
     const passed = await bcrypt.compare(password, user.hashed_password);
     if (!passed) throw new UnauthorizedException();
@@ -39,12 +39,5 @@ export class AuthService {
 
   async signup(createUserDto: CreateUserDto) {
     return await this.usersService.create(createUserDto);
-  }
-
-  async updateMyAccountByUsername(
-    userShowDto: UserShowDto,
-    updateuserDto: UpdateUserDto,
-  ) {
-    return await this.usersService.update(userShowDto, updateuserDto);
   }
 }

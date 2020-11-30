@@ -1,6 +1,6 @@
 import { AppService } from './app.service';
 import { Controller, Get } from '@nestjs/common';
-import { SkipJwt } from 'decorators/SkipJwt';
+import { SkipJwt } from 'modules/auth/decorators/skipJwt.decorator';
 
 @Controller()
 export class AppController {
