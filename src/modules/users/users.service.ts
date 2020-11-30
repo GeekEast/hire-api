@@ -34,7 +34,12 @@ export class UsersService {
 
   async findAll(listUserPagination: ListUserPaginationDto) {
     const { limit, skip } = listUserPagination;
-    return await this.userModel.find().limit(limit).skip(skip);
+    return await this.userModel
+      .find()
+      .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
+      .limit(limit)
+      .skip(skip)
+      .select(['_id', 'name', 'username', 'company', 'role']);
   }
 
   async create(createUserDto: CreateUserDto) {

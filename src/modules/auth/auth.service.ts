@@ -25,15 +25,20 @@ export class AuthService {
     if (!user) throw new UnauthorizedException();
     const passed = await bcrypt.compare(password, user.hashed_password);
     if (!passed) throw new UnauthorizedException();
-    return { username: user.username, userId: user._id };
+    return { username: user.username, userId: user._id, role: user.role };
   }
 
   async generateJwt(user: {
     username: string;
     user_id: string;
+    role: string;
   }): Promise<{ access_token: string }> {
     if (isNil(user)) return null;
-    const payload = { username: user.username, sub: user.user_id };
+    const payload = {
+      username: user.username,
+      sub: user.user_id,
+      role: user.role,
+    };
     return { access_token: this.jwtService.sign(payload) };
   }
 

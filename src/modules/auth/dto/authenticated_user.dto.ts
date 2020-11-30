@@ -8,4 +8,8 @@ export class AuthenticatedUser {
   @IsDefined()
   @IsString()
   userId: string;
+
+  @IsDefined()
+  @IsString()
+  role: string;
 }
