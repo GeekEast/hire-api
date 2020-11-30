@@ -29,7 +29,9 @@ export class CompaniesService {
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto) {
     await this.findById(id);
-    return await this.companyModel.findByIdAndUpdate(id, updateCompanyDto);
+    return await this.companyModel.findByIdAndUpdate(id, updateCompanyDto, {
+      new: true,
+    });
   }
 
   async delete(id: string) {
