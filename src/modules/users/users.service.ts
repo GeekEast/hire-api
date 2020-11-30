@@ -67,7 +67,23 @@ export class UsersService {
   }
 
   async update(userShowDto: UserShowDto, updateUserDto: UpdateUserDto) {
-    const { id, company: prevCompany } = await this.findByUsername(userShowDto);
+    const currUser = await this.findByUsername(userShowDto);
+    return await this.updateAnyUser(currUser, updateUserDto);
+  }
+
+  async adminUpdate(userId: string, updateUserDto: UpdateUserDto) {
+    const user = await this.findById(userId);
+    return this.updateAnyUser(user, updateUserDto);
+  }
+
+  // --------------------- private methods -------------------------
+
+  private async safeUser(user: User) {
+    return pick(user, ['_id', 'username', 'name', 'role', 'company']);
+  }
+
+  private async updateAnyUser(currUser: User, updateUserDto: UpdateUserDto) {
+    const { id, company: prevCompany } = currUser;
     const {
       password,
       confirmed_password,
@@ -95,9 +111,5 @@ export class UsersService {
       userId: user._id,
     });
     return this.safeUser(user);
-  }
-
-  private async safeUser(user: User) {
-    return pick(user, ['_id', 'username', 'name', 'role', 'company']);
   }
 }

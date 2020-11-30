@@ -1,6 +1,7 @@
 import { ListUserPaginationDto } from './dto/list.dt';
-import { RoleEnum } from 'modules/auth/enums/role.enum';
 import { Role } from 'modules/auth/decorators/roles.decorator';
+import { RoleEnum } from 'modules/auth/enums/role.enum';
+import { RolesGuard } from 'modules/auth/guards/roles.guard';
 import { UpdateUserDto } from './dto/update.dto';
 import { UserShowDto } from './dto/show.dto';
 import { UsersService } from './users.service';
@@ -17,7 +18,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { RolesGuard } from 'modules/auth/guards/roles.guard';
+import { update } from 'lodash';
 
 @Controller('users')
 export class UsersController {
@@ -57,8 +58,11 @@ export class UsersController {
   @Patch('/:id')
   @Role(RoleEnum.Admin)
   @HttpCode(HttpStatus.OK)
-  partialUpdateAccount(@Param('id') id: string, UpdateUserDto) {
-    return;
+  partialUpdateAccount(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.adminUpdate(id, updateUserDto);
   }
 
   // TODO: add role-based authorization
@@ -66,7 +70,7 @@ export class UsersController {
   @Role(RoleEnum.Admin)
   @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.OK)
-  updateAccount(@Param('id') id: string, UpdateUserDto) {
-    return;
+  updateAccount(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.adminUpdate(id, updateUserDto);
   }
 }
