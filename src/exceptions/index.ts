@@ -11,3 +11,15 @@ export class UserAccountExistException extends HttpException {
     );
   }
 }
+
+export class AccountPasswordNotMatchConfirmException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: `Password doesn't match confirm.`,
+      },
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}

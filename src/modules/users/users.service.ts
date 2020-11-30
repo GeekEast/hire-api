@@ -1,18 +1,23 @@
 import bcrypt from 'bcrypt';
-import { Company } from 'modules/companies/schemas/company.schema';
+import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateUserDto } from './dto/create.dto';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { isEmpty } from 'lodash';
+import { isEmpty, pick } from 'lodash';
 import { Model } from 'mongoose';
+import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
-import { UserAccountExistException } from 'exceptions';
 import { UserShowDto } from './dto/show.dto';
+import {
+  AccountPasswordNotMatchConfirmException,
+  UserAccountExistException,
+} from 'exceptions';
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Company.name) private companyModel: Model<Company>,
+    private readonly companyService: CompaniesService,
   ) {}
 
   async findOne(userShowDto: UserShowDto) {
@@ -37,13 +42,46 @@ export class UsersService {
       company,
     });
 
-    // update company
-    await this.companyModel.findByIdAndUpdate(
-      user.company,
-      {
-        $push: { users: user._id },
-      },
-      { new: true },
-    );
+    // add user to company
+    await this.companyService.addUserToCompany({
+      companyId: company as any,
+      user: user._id,
+    });
+    return this.safeUser(user);
+  }
+
+  async update(userShowDto: UserShowDto, updateUserDto: UpdateUserDto) {
+    const { id, company: prevCompany } = await this.findOne(userShowDto);
+    const {
+      password,
+      confirmed_password,
+      company: currCompany,
+    } = updateUserDto;
+    if (password !== confirmed_password)
+      throw new AccountPasswordNotMatchConfirmException();
+
+    let user;
+    try {
+      user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
+        new: true,
+        useFindAndModify: false,
+      });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.FORBIDDEN);
+    }
+
+    await this.companyService.addUserToCompany({
+      companyId: prevCompany as any,
+      user: user._id,
+    });
+    await this.companyService.removeUserFromCompany({
+      companyId: currCompany as any,
+      userId: user._id,
+    });
+    return this.safeUser(user);
+  }
+
+  private async safeUser(user: User) {
+    return pick(user, ['_id', 'username', 'name', 'role', 'company']);
   }
 }

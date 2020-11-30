@@ -1,3 +1,4 @@
+import { CompaniesService } from 'modules/companies/companies.service';
 import { Company } from 'modules/companies/schemas/company.schema';
 import { CompanySchema } from 'modules/companies/schemas/company.schema';
 import { Module } from '@nestjs/common';
@@ -13,7 +14,7 @@ import { UsersService } from './users.service';
       { name: Company.name, schema: CompanySchema },
     ]),
   ],
-  providers: [UsersService],
+  providers: [UsersService, CompaniesService],
   controllers: [UsersController],
   exports: [UsersService],
 })

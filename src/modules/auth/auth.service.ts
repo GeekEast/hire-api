@@ -1,3 +1,4 @@
+import { UsersModule } from 'modules/users/users.module';
 import bcrypt from 'bcrypt';
 import { AuthenticatedUser } from './dto/authenticated_user.dto';
 import { CreateUserDto } from 'modules/users/dto/create.dto';
@@ -6,6 +7,8 @@ import { isNil } from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login.dto';
 import { UsersService } from 'modules/users/users.service';
+import { UserShowDto } from 'modules/users/dto/show.dto';
+import { UpdateUserDto } from 'modules/users/dto/update.dto';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +38,13 @@ export class AuthService {
   }
 
   async signup(createUserDto: CreateUserDto) {
-    await this.usersService.create(createUserDto);
+    return await this.usersService.create(createUserDto);
+  }
+
+  async updateMyAccountByUsername(
+    userShowDto: UserShowDto,
+    updateuserDto: UpdateUserDto,
+  ) {
+    return await this.usersService.update(userShowDto, updateuserDto);
   }
 }
