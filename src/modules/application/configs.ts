@@ -1,4 +1,7 @@
 export default () => ({
+  api: {
+    port: process.env.API_PORT,
+  },
   jwt: {
     secret: process.env.JWT_SECRET,
     expire: process.env.JWT_EXPIRE,
