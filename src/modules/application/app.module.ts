@@ -17,28 +17,22 @@ import { VacanciesModule } from 'modules/vacancies/vacancies.module';
       envFilePath: ['.development.env'],
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
-    MongooseModule.forRootAsync(
-      // `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}`,
-      // {
-      //   useCreateIndex: true,
-      // },
-      {
-        imports: [ConfigService],
-        useFactory: async (configService: ConfigService) => {
-          const username = configService.get<string>('mongodb.username');
-          const password = configService.get<string>('mongodb.password');
-          const host = configService.get<string>('mongodb.host');
-          const port = configService.get<string>('mongodb.port');
-          const dbname = configService.get<string>('mongodb.name');
-          const uri = `mongodb://${username}:${password}@${host}:${port}/${dbname}`;
-          return {
-            uri,
-            useCreateIndex: true,
-          };
-        },
-        inject: [ConfigService],
+    MongooseModule.forRootAsync({
+      imports: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const username = configService.get<string>('mongodb.username');
+        const password = configService.get<string>('mongodb.password');
+        const host = configService.get<string>('mongodb.host');
+        const port = configService.get<string>('mongodb.port');
+        const dbname = configService.get<string>('mongodb.name');
+        const uri = `mongodb://${username}:${password}@${host}:${port}/${dbname}`;
+        return {
+          uri,
+          useCreateIndex: true,
+        };
       },
-    ),
+      inject: [ConfigService],
+    }),
     CompaniesModule,
     UsersModule,
     VacanciesModule,
