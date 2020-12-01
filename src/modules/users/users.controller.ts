@@ -18,8 +18,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { update } from 'lodash';
-
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -54,7 +52,6 @@ export class UsersController {
     return this.usersService.update(req.user, updateUserDto);
   }
 
-  // TODO: add role-based authorization
   @Patch('/:id')
   @Role(RoleEnum.Admin)
   @HttpCode(HttpStatus.OK)
@@ -65,7 +62,6 @@ export class UsersController {
     return this.usersService.adminUpdate(id, updateUserDto);
   }
 
-  // TODO: add role-based authorization
   @Put('/:id')
   @Role(RoleEnum.Admin)
   @UseGuards(RolesGuard)
