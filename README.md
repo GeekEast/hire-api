@@ -11,3 +11,10 @@
 
 ### Bugs
 - [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1)
+
+### What Need to Do?
+- Testing on Relational Entity Updates
+- Seeding Data Scripts
+- Unit Testing
+- Transaction
+- Enable CORS
