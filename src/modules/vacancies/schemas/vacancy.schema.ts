@@ -1,5 +1,7 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { Company } from 'modules/companies/schemas/company.schema';
 import { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
 export class Vacancy extends Document {
@@ -7,10 +9,16 @@ export class Vacancy extends Document {
   title: string;
 
   @Prop()
-  description: number;
+  description: string;
 
   @Prop()
-  expiredAt: string;
+  expiredAt: Date;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Company?.name || 'Company',
+  })
+  company?: Company;
 }
 
 export const VacancySchema = SchemaFactory.createForClass(Vacancy);

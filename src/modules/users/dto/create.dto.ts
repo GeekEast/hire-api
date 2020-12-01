@@ -1,4 +1,5 @@
-import { IsDefined, IsEmail, IsString } from 'class-validator';
+import { Company } from 'modules/companies/schemas/company.schema';
+import { IsDefined, IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsDefined()
@@ -12,4 +13,8 @@ export class CreateUserDto {
   @IsDefined()
   @IsString()
   password: string;
+
+  @IsOptional()
+  @IsString()
+  company?: Company;
 }

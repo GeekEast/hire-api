@@ -1,11 +1,10 @@
 import { IsDefined, IsString } from 'class-validator';
-
-export class AuthenticatedUser {
-  @IsDefined()
+export class RemoveUserFromCompanyDto {
   @IsString()
-  username: string;
-
   @IsDefined()
+  companyId: string;
+
   @IsString()
-  userId: string;
+  @IsDefined()
+  user: string;
 }

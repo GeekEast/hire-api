@@ -1,6 +1,7 @@
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'modules/users/dto/create.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { SkipJwt } from 'modules/auth/decorators/skipJwt.decorator';
 import {
   Controller,
   HttpCode,
@@ -11,8 +12,7 @@ import {
   Body,
   Get,
 } from '@nestjs/common';
-import { SkipJwt } from 'decorators/SkipJwt';
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -31,7 +31,8 @@ export class AuthController {
     return this.authService.signup(createUserDto);
   }
 
-  @Get('/validate')
+  @Get('/auth/validate')
+  @HttpCode(HttpStatus.OK)
   authenticate() {
     return;
   }

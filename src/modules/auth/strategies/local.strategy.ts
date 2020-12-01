@@ -1,4 +1,4 @@
-import { AuthenticatedUser } from './../dto/authenticated_user.dto';
+import { AuthenticatedUser } from '../dto/authenticated.dto';
 import { AuthService } from '../auth.service';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';

@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { AuthenticatedUser } from './dto/authenticated_user.dto';
+import { AuthenticatedUser } from './dto/authenticated.dto';
 import { CreateUserDto } from 'modules/users/dto/create.dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { isNil } from 'lodash';
@@ -18,23 +18,28 @@ export class AuthService {
     username,
     password,
   }: LoginUserDto): Promise<AuthenticatedUser> {
-    const user = await this.usersService.findOne({ username });
+    const user = await this.usersService.findByUsername({ username });
     if (!user) throw new UnauthorizedException();
     const passed = await bcrypt.compare(password, user.hashed_password);
     if (!passed) throw new UnauthorizedException();
-    return { username: user.username, userId: user._id };
+    return { username: user.username, userId: user._id, role: user.role };
   }
 
   async generateJwt(user: {
     username: string;
     user_id: string;
+    role: string;
   }): Promise<{ access_token: string }> {
     if (isNil(user)) return null;
-    const payload = { username: user.username, sub: user.user_id };
+    const payload = {
+      username: user.username,
+      sub: user.user_id,
+      role: user.role,
+    };
     return { access_token: this.jwtService.sign(payload) };
   }
 
   async signup(createUserDto: CreateUserDto) {
-    await this.usersService.create(createUserDto);
+    return await this.usersService.create(createUserDto);
   }
 }

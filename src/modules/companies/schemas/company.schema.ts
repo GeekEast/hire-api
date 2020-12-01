@@ -12,12 +12,15 @@ export class Company extends Document {
   @Prop()
   address: string;
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: User?.name || 'User' })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: User?.name || 'User' }],
+  })
   users: User[];
 
   @Prop({
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: Vacancy?.name || 'Vacancy',
+    type: [
+      { type: mongoose.Schema.Types.ObjectId, ref: Vacancy?.name || 'Vacancy' },
+    ],
   })
   vacancies: Vacancy[];
 }
