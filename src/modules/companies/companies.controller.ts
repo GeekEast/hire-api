@@ -47,7 +47,7 @@ export class CompaniesController {
 
   @Delete('/:id')
   remove(@Param('id') id: string) {
-    return this.companiesService.delete(id);
+    return this.companiesService.remove(id);
   }
 
   @Post('/:company_id/users/:user_id')

@@ -40,7 +40,7 @@ export class UsersController {
 
   @Patch('/me')
   @HttpCode(HttpStatus.OK)
-  async partialUpdateMyAccount(
+  async partial_update_me(
     @Body() updateUserDto: UpdateUserDto,
     @Request() req,
   ) {
@@ -49,14 +49,14 @@ export class UsersController {
 
   @Put('/me')
   @HttpCode(HttpStatus.OK)
-  async updateMyAccount(@Body() updateUserDto: UpdateUserDto, @Request() req) {
+  async update_me(@Body() updateUserDto: UpdateUserDto, @Request() req) {
     return this.usersService.update(req.user, updateUserDto);
   }
 
   @Patch('/:id')
   @Role(RoleEnum.Admin)
   @HttpCode(HttpStatus.OK)
-  partialUpdateAccount(
+  partial_udpate(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
@@ -67,7 +67,7 @@ export class UsersController {
   @Role(RoleEnum.Admin)
   @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.OK)
-  updateAccount(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.adminUpdate(id, updateUserDto);
   }
 

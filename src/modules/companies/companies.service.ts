@@ -39,7 +39,7 @@ export class CompaniesService {
     });
   }
 
-  async delete(id: string) {
+  async remove(id: string) {
     await this.findById(id);
     return await this.companyModel.findByIdAndDelete(id);
   }
