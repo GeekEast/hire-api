@@ -1,6 +1,7 @@
 ### Prerequisites
 - You need `.development.env` to include all the environment variables for development.
 - You need `docker-entrypoint-initdb.d` to init your dockerized mongodb.
+- Please make sure your local `port:3000` is free to use.
 ### Docker
 - Build `docker build -t hire_docker_api .`
 - run `docker run -d -p 3000:3000 --env-file ./.development.env hire_docker_api`
