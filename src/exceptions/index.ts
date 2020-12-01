@@ -12,6 +12,30 @@ export class UserAccountExistException extends HttpException {
   }
 }
 
+export class UserNotFoundException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: `User account doesn't exist`,
+      },
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}
+
+export class AccountPasswordNotMatchException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: `username and password doesn't match.`,
+      },
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}
+
 export class AccountPasswordNotMatchConfirmException extends HttpException {
   constructor() {
     super(

@@ -14,6 +14,10 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
+  @IsDefined()
+  @IsString()
+  confirmed_password: string;
+
   @IsOptional()
   @IsString()
   company?: Company;

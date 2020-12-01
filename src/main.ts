@@ -16,6 +16,7 @@ async function bootstrap() {
       },
     }),
   );
+  // not using configService here is fine.
   await app.listen(parseInt(process.env.API_PORT) || 3000);
   saveRoutesToJson(app);
 }
