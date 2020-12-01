@@ -2,7 +2,12 @@ import { ListUserPaginationDto } from './dto/list.dt';
 import bcrypt from 'bcrypt';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateUserDto } from './dto/create.dto';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty, pick } from 'lodash';
 import { Model } from 'mongoose';
@@ -29,6 +34,7 @@ export class UsersService {
 
   async findById(id: string) {
     const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException();
     return user;
   }
 
@@ -76,6 +82,11 @@ export class UsersService {
     return this.updateAnyUser(user, updateUserDto);
   }
 
+  async remove(id: string) {
+    await this.findById(id);
+    return await this.userModel.findByIdAndDelete(id);
+  }
+
   // --------------------- private methods -------------------------
 
   private async safeUser(user: User) {
@@ -102,14 +113,15 @@ export class UsersService {
       throw new HttpException(err.message, HttpStatus.FORBIDDEN);
     }
 
-    await this.companyService.addUserToCompany({
+    await this.companyService.removeUserFromCompany({
       companyId: prevCompany as any,
       user: user._id,
     });
-    await this.companyService.removeUserFromCompany({
+    await this.companyService.addUserToCompany({
       companyId: currCompany as any,
-      userId: user._id,
+      user: user._id,
     });
+
     return this.safeUser(user);
   }
 }

@@ -6,5 +6,5 @@ export class RemoveUserFromCompanyDto {
 
   @IsString()
   @IsDefined()
-  userId: string;
+  user: string;
 }

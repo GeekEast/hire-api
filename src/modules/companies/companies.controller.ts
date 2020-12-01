@@ -64,11 +64,11 @@ export class CompaniesController {
   @Delete('/:company_id/users/:user_id')
   removeUserFromCompany(
     @Param('company_id') companyId: string,
-    @Param('user_id') userId: string,
+    @Param('user_id') user: string,
   ) {
     return this.companiesService.removeUserFromCompany({
       companyId,
-      userId,
+      user,
     });
   }
 }

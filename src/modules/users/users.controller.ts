@@ -8,6 +8,7 @@ import { UsersService } from './users.service';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -68,5 +69,13 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   updateAccount(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.adminUpdate(id, updateUserDto);
+  }
+
+  @Delete('/:id')
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 }
