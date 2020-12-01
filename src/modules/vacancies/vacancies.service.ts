@@ -11,18 +11,28 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { pick } from 'lodash';
 
 @Injectable()
 export class VacanciesService {
+  safe_attributes: string[];
   constructor(
     @InjectModel(Vacancy.name) private vacancyModel: Model<Vacancy>,
     private readonly companyService: CompaniesService,
-  ) {}
+  ) {
+    this.safe_attributes = [
+      '_id',
+      'title',
+      'description',
+      'expiredAt',
+      'company',
+    ];
+  }
 
   async findById(id: string) {
     const vacancy = await this.vacancyModel.findById(id);
     if (!vacancy) throw new NotFoundException();
-    return vacancy;
+    return this.permit(vacancy);
   }
 
   async findAll(listVacancyPaginationDto: ListVacancyPaginationDto) {
@@ -31,7 +41,8 @@ export class VacanciesService {
       .find()
       .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
       .limit(limit)
-      .skip(skip);
+      .skip(skip)
+      .select(this.safe_attributes);
   }
 
   async create(createVacancyDto: CreateVacancyDto) {
@@ -41,7 +52,7 @@ export class VacanciesService {
       companyId: company as any,
       vacancy,
     });
-    return vacancy;
+    return this.permit(vacancy);
   }
 
   async update(id: string, updateVacancyDto: UpdateVacancyDto) {
@@ -70,11 +81,15 @@ export class VacanciesService {
       vacancy: vacancy._id,
     });
 
-    return vacancy;
+    return this.permit(vacancy);
   }
 
   async remove(id: string) {
     await this.findById(id);
-    return await this.vacancyModel.findByIdAndDelete(id);
+    await this.vacancyModel.findByIdAndDelete(id);
+  }
+
+  private async permit(vacancy: Vacancy) {
+    return pick(vacancy, this.safe_attributes);
   }
 }
