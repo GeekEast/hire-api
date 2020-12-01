@@ -1,17 +1,24 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "target": "es2017",
-    "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./src",
-    "incremental": true,
-    "skipDefaultLibCheck": true
-  }
+    "skipDefaultLibCheck": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    "strict": false
+  },
+  "include": ["src/*"],
+  "exclude": [
+    "node_modules",
+    "./node_modules",
+    "./node_modules/*",
+    "./node_modules/@types/node/index.d.ts"
+  ]
 }

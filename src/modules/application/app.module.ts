@@ -1,3 +1,4 @@
+import appConfigs from './configs';
 import { AppController } from 'modules/application/app.controller';
 import { AppService } from 'modules/application/app.service';
 import { AuthModule } from 'modules/auth/auth.module';
@@ -7,7 +8,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from 'modules/users/users.module';
 import { VacanciesModule } from 'modules/vacancies/vacancies.module';
-import appConfigs from './configs';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -15,9 +16,12 @@ import appConfigs from './configs';
       isGlobal: true,
       envFilePath: ['.development.env'],
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI, {
-      useCreateIndex: true,
-    }),
+    MongooseModule.forRoot(
+      `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.MONGODB_DBNAME}`,
+      {
+        useCreateIndex: true,
+      },
+    ),
     CompaniesModule,
     UsersModule,
     VacanciesModule,

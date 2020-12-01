@@ -64,7 +64,7 @@ export class CompaniesService {
     return await this.companyModel.findByIdAndUpdate(
       companyId,
       {
-        $pull: { users: user },
+        $pull: { users: user as any },
       },
       { new: true, useFindAndModify: false },
     );

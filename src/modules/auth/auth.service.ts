@@ -6,7 +6,7 @@ import { isNil } from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login.dto';
 import { UsersService } from 'modules/users/users.service';
-
+import { get } from 'lodash';
 @Injectable()
 export class AuthService {
   constructor(
@@ -22,7 +22,11 @@ export class AuthService {
     if (!user) throw new UnauthorizedException();
     const passed = await bcrypt.compare(password, user.hashed_password);
     if (!passed) throw new UnauthorizedException();
-    return { username: user.username, userId: user._id, role: user.role };
+    return {
+      username: user.username,
+      userId: get(user, ['_id']),
+      role: user.role,
+    };
   }
 
   async generateJwt(user: {

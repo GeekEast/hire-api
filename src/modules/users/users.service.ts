@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateUserDto } from './dto/create.dto';
+import { get } from 'lodash';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty, pick } from 'lodash';
 import { ListUserPaginationDto } from './dto/list.dt';
@@ -18,7 +19,6 @@ import {
   AccountPasswordNotMatchConfirmException,
   UserAccountExistException,
 } from 'exceptions';
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -57,17 +57,17 @@ export class UsersService {
     const role = 'user'; // TODO: how to create admins
 
     // create user
-    const user = await this.userModel.create({
+    const user = (await this.userModel.create({
       ...createUserDto,
       hashed_password,
       role,
       company,
-    });
+    })) as User;
 
     // add user to company
     await this.companyService.addUserToCompany({
       companyId: company as any,
-      user: user._id,
+      user: get(user, ['_id']),
     });
     return this.safeUser(user);
   }

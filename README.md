@@ -5,6 +5,8 @@
 ## Docker
 - build `docker build -t hire_docker_api .`
 - run `docker run -p 3000:3000 --env-file ./.development.env hire_docker_api`
-- keep running `docker run -td hire_docker_api`
-- list container `docker container ls`
-- run bash interactively `docker exec -it <container_id> bash `
+- keep running `docker run -p 3000:3000 --env-file ./.development.env hire_docker_api`
+- get into container `docker exec -it <container_id> /bin/sh`
+> To run the app locally in docker, please use resolved IP address of the host, rather than `host.docker.internal` 
+## Bug Report
+- [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1)
