@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { AuthenticatedUser } from './dto/authenticated.dto';
 import { CreateUserDto } from 'modules/users/dto/create.dto';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { isNil } from 'lodash';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login.dto';
@@ -22,7 +22,7 @@ export class AuthService {
     username,
     password,
   }: LoginUserDto): Promise<AuthenticatedUser> {
-    const user = await this.usersService.findByUsername({ username });
+    const user = await this.usersService.unsafeFindByUsername({ username });
     if (!user) throw new UserNotFoundException();
     const passed = await bcrypt.compare(password, user.hashed_password);
     if (!passed) throw new AccountPasswordNotMatchException();

@@ -21,21 +21,22 @@ import {
 } from 'exceptions';
 @Injectable()
 export class UsersService {
+  safe_attributes: string[];
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly companyService: CompaniesService,
-  ) {}
+  ) {
+    this.safe_attributes = ['_id', 'username', 'name', 'role', 'company'];
+  }
 
   async findByUsername(userShowDto: UserShowDto) {
-    const { username } = userShowDto;
-    const user = await this.userModel.findOne({ username });
-    return user;
+    const user = await this.unsafeFindByUsername(userShowDto);
+    return this.permit(user);
   }
 
   async findById(id: string) {
-    const user = await this.userModel.findById(id);
-    if (!user) throw new NotFoundException();
-    return user;
+    const user = await this.unsafeFindById(id);
+    return this.permit(user);
   }
 
   async findAll(listUserPagination: ListUserPaginationDto) {
@@ -45,7 +46,7 @@ export class UsersService {
       .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
       .limit(limit)
       .skip(skip)
-      .select(['_id', 'name', 'username', 'company', 'role']);
+      .select(this.safe_attributes);
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -70,29 +71,25 @@ export class UsersService {
       companyId: company as any,
       user: get(user, ['_id']),
     });
-    return this.safeUser(user);
+    return this.permit(user);
   }
 
   async update(userShowDto: UserShowDto, updateUserDto: UpdateUserDto) {
-    const currUser = await this.findByUsername(userShowDto);
+    const currUser = await this.unsafeFindByUsername(userShowDto);
     return await this.updateAnyUser(currUser, updateUserDto);
   }
 
   async adminUpdate(userId: string, updateUserDto: UpdateUserDto) {
-    const user = await this.findById(userId);
+    const user = await this.unsafeFindById(userId);
     return this.updateAnyUser(user, updateUserDto);
   }
 
   async remove(id: string) {
     await this.findById(id);
-    return await this.userModel.findByIdAndDelete(id);
+    await this.userModel.findByIdAndDelete(id);
   }
 
   // --------------------- private methods -------------------------
-
-  private async safeUser(user: User) {
-    return pick(user, ['_id', 'username', 'name', 'role', 'company']);
-  }
 
   private async updateAnyUser(currUser: User, updateUserDto: UpdateUserDto) {
     const { id, company: prevCompany } = currUser;
@@ -123,6 +120,22 @@ export class UsersService {
       user: user._id,
     });
 
-    return this.safeUser(user);
+    return this.permit(user);
+  }
+
+  async unsafeFindByUsername(userShowDto: UserShowDto) {
+    const { username } = userShowDto;
+    const user = await this.userModel.findOne({ username });
+    if (!user) throw new NotFoundException();
+    return user;
+  }
+
+  private async unsafeFindById(id: string) {
+    const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException();
+    return user;
+  }
+  private async permit(user: User) {
+    return pick(user, this.safe_attributes);
   }
 }

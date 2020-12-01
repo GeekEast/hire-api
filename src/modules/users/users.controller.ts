@@ -24,16 +24,22 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/username/:username')
-  showByUsername(@Param('username') username: UserShowDto) {
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
+  async showByUsername(@Param('username') username: UserShowDto) {
     return this.usersService.findByUsername(username);
   }
 
   @Get('/:id')
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
   show(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
   @Get('')
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
   index(@Query() listUserPagination: ListUserPaginationDto) {
     return this.usersService.findAll(listUserPagination);
   }
