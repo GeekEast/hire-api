@@ -12,6 +12,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { CreateCompanyDto } from './dto/create.dto';
 
 @Controller('companies')
 export class CompaniesController {
@@ -23,8 +24,8 @@ export class CompaniesController {
   }
 
   @Post()
-  create(@Body() body: any) {
-    return this.companiesService.create(body);
+  create(@Body() createCompanyDto: CreateCompanyDto) {
+    return this.companiesService.create(createCompanyDto);
   }
 
   @Get('/:id')

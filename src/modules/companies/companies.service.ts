@@ -8,40 +8,49 @@ import { Model } from 'mongoose';
 import { RemoveUserFromCompanyDto } from './dto/removeUser.dto';
 import { UpdateCompanyDto } from './dto/update.dto';
 import { RemoveVacancyFromCompanyDto } from './dto/removeVacancy.dto';
+import { CreateCompanyDto } from './dto/create.dto';
+import { pick } from 'lodash';
 
 @Injectable()
 export class CompaniesService {
-  constructor(
-    @InjectModel(Company.name) private companyModel: Model<Company>,
-  ) {}
+  safe_attributes: string[];
+  constructor(@InjectModel(Company.name) private companyModel: Model<Company>) {
+    this.safe_attributes = ['_id', 'name', 'address', 'users', 'vacancies'];
+  }
 
   async findById(id: string) {
     const company = await this.companyModel.findById(id);
     if (!company) throw new NotFoundException();
-    return company;
+    return this.permit(company);
   }
 
   async findAll(indexCompanyDto: IndexCompanyDto) {
     const { skip, limit } = indexCompanyDto;
-    return await this.companyModel.find().limit(limit).skip(skip);
+    return await this.companyModel
+      .find()
+      .limit(limit)
+      .skip(skip)
+      .select(this.safe_attributes);
   }
 
-  async create(body: any) {
-    const coffee = new this.companyModel(body);
-    return await coffee.save();
+  async create(createCompanyDto: CreateCompanyDto) {
+    const company = new this.companyModel(createCompanyDto).save();
+    return this.permit(company);
   }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto) {
     await this.findById(id);
-    return await this.companyModel.findByIdAndUpdate(id, updateCompanyDto, {
-      new: true,
-      useFindAndModify: false,
-    });
+    return await this.companyModel
+      .findByIdAndUpdate(id, updateCompanyDto, {
+        new: true,
+        useFindAndModify: false,
+      })
+      .select(this.safe_attributes);
   }
 
   async remove(id: string) {
     await this.findById(id);
-    return await this.companyModel.findByIdAndDelete(id);
+    await this.companyModel.findByIdAndDelete(id);
   }
 
   async addUserToCompany(addUserToCompanyDto: AddUserToCompanyDto) {
@@ -94,5 +103,9 @@ export class CompaniesService {
       },
       { new: true, useFindAndModify: false },
     );
+  }
+
+  private permit(company) {
+    return pick(company, this.safe_attributes);
   }
 }

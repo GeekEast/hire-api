@@ -10,15 +10,6 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "skipDefaultLibCheck": true,
-    "strictPropertyInitialization": false,
-    "skipLibCheck": true,
-    "strict": false
-  },
-  "include": ["src/*"],
-  "exclude": [
-    "node_modules",
-    "./node_modules",
-    "./node_modules/*",
-    "./node_modules/@types/node/index.d.ts"
-  ]
+    "skipLibCheck": true
+  }
 }
