@@ -1,16 +1,16 @@
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateVacancyDto } from './dto/create.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { ListVacancyPaginationDto } from './dto/list.dto';
+import { Model } from 'mongoose';
+import { UpdateVacancyDto } from './dto/update.dto';
+import { Vacancy } from './schemas/vacancy.schema';
 import {
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { ListVacancyPaginationDto } from './dto/list.dto';
-import { Model } from 'mongoose';
-import { UpdateVacancyDto } from './dto/update.dto';
-import { Vacancy } from './schemas/vacancy.schema';
 
 @Injectable()
 export class VacanciesService {

@@ -4,6 +4,7 @@ export class ListUserPaginationDto {
   @IsOptional()
   @IsNumber()
   limit: number;
+
   @IsOptional()
   @IsNumber()
   skip: number;

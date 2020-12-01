@@ -1,3 +1,7 @@
+import { CreateVacancyDto } from './dto/create.dto';
+import { ListVacancyPaginationDto } from './dto/list.dto';
+import { Role } from 'modules/auth/decorators/roles.decorator';
+import { RoleEnum } from 'modules/auth/enums/role.enum';
 import { RolesGuard } from 'modules/auth/guards/roles.guard';
 import { UpdateVacancyDto } from './dto/update.dto';
 import { VacanciesService } from 'modules/vacancies/vacancies.service';
@@ -13,10 +17,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ListVacancyPaginationDto } from './dto/list.dto';
-import { CreateVacancyDto } from './dto/create.dto';
-import { Role } from 'modules/auth/decorators/roles.decorator';
-import { RoleEnum } from 'modules/auth/enums/role.enum';
 
 @Controller('vacancies')
 export class VacanciesController {

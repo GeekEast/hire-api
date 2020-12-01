@@ -1,19 +1,19 @@
-import { ListUserPaginationDto } from './dto/list.dt';
 import bcrypt from 'bcrypt';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateUserDto } from './dto/create.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { isEmpty, pick } from 'lodash';
+import { ListUserPaginationDto } from './dto/list.dt';
+import { Model } from 'mongoose';
+import { UpdateUserDto } from './dto/update.dto';
+import { User } from './schemas/user.schema';
+import { UserShowDto } from './dto/show.dto';
 import {
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { isEmpty, pick } from 'lodash';
-import { Model } from 'mongoose';
-import { UpdateUserDto } from './dto/update.dto';
-import { User } from './schemas/user.schema';
-import { UserShowDto } from './dto/show.dto';
 import {
   AccountPasswordNotMatchConfirmException,
   UserAccountExistException,

@@ -1,4 +1,4 @@
-import { RoleEnum } from './../../auth/enums/role.enum';
+import { RoleEnum } from 'modules/auth/enums/role.enum';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Company } from 'modules/companies/schemas/company.schema';
 

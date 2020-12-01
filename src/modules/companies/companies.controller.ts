@@ -1,6 +1,6 @@
 import { CompaniesService } from './companies.service';
-import { IndexCompanyDto } from './dto/indexCompnay.dto';
-import { UpdateCompanyDto } from './dto/updateCompany.dto';
+import { IndexCompanyDto } from './dto/list.dto';
+import { UpdateCompanyDto } from './dto/update.dto';
 import {
   Body,
   Controller,
