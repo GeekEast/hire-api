@@ -88,6 +88,7 @@ export class UsersService {
         }));
       await session.commitTransaction();
     } catch (err) {
+      // log into New Relic in Production
       await session.abortTransaction();
     } finally {
       session.endSession();
@@ -107,8 +108,13 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    await this.findById(id);
+    const { company } = await this.findById(id);
     await this.userModel.findByIdAndDelete(id);
+    !!company &&
+      (await this.companyService.removeUserFromCompany({
+        companyId: String(company),
+        user: id,
+      }));
   }
 
   // --------------------- private methods -------------------------
@@ -140,7 +146,7 @@ export class UsersService {
         },
       );
 
-      // remove company
+      // remove company remove compnay if currCompany is ""
       if (String(currCompany) === '') {
         user = await this.userModel.findByIdAndUpdate(
           id,
@@ -153,7 +159,7 @@ export class UsersService {
           },
         );
       }
-      !!prevCompany && // if user doesnt' belong to one company before
+      !!prevCompany && // if user doesn't belong to one company before
         (await this.companyService.removeUserFromCompany({
           companyId: prevCompany as any,
           user: user._id,
@@ -165,6 +171,7 @@ export class UsersService {
         }));
       await session.commitTransaction();
     } catch (err) {
+      // log into New Relic in Production
       await session.abortTransaction();
     } finally {
       session.endSession();

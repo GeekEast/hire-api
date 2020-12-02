@@ -12,14 +12,18 @@
 ### Bugs
 - [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1)
 
+### Problem
+- No-SQL Cascading Problem when you want to scale the application?
+- use cases for mongodb
+<p align="center"><img style="display: block; width: 600px; margin: 0 auto;" src=img/2020-12-02-21-19-01.png alt="no image found"></p>
+
 ### What Need to Do?
-- Testing on Relational Entity Updates
-- API Design **Documentation**
-- Transaction (!important)
-- Database cascading operation
-- Seeding Data Scripts
-- Unit Testing
+- Testing on Relational Entity Updates (Current)
+- API Design **Documentation** (Future)
+- Database cascading operation as middleware (Future)
+- Seeding Data Scripts (Optional)
+- Unit Testing (Future)
   - Currently, there are dependencies between each module, which is not ideal at all.
   - In future, we need **mock** 3rd party `providers`, `models` and so on. Bunch of workload.
   - Need both `positive` and `negative` test.
-- Enable CORS (Production)
+- Enable CORS (Future)

@@ -10,7 +10,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { pick } from 'lodash';
+import { pick, isEmpty, pickBy } from 'lodash';
 
 @Injectable()
 export class VacanciesService {
@@ -51,8 +51,13 @@ export class VacanciesService {
 
     let vacancy;
     try {
-      vacancy = await this.vacancyModel.create(createVacancyDto);
+      const compact_createVacancyDto = pickBy(
+        createVacancyDto,
+        (c) => !isEmpty(c),
+      ) as any;
+      vacancy = await this.vacancyModel.create(compact_createVacancyDto);
       const { company } = vacancy;
+
       !!company && // if user inputs company as ""
         (await this.companyService.addVacancyToCompany({
           companyId: company as any,
@@ -60,18 +65,18 @@ export class VacanciesService {
         }));
       await session.commitTransaction();
     } catch (err) {
+      // log err into New Relic in production
       await session.abortTransaction();
     } finally {
       session.endSession();
     }
-
     if (!vacancy) throw new InternalServerErrorException();
     return this.permit(vacancy);
   }
 
   async update(id: string, updateVacancyDto: UpdateVacancyDto) {
     const { company: prevCompany } = await this.findById(id);
-
+    const { company: currCompany } = updateVacancyDto;
     const session = await this.connection.startSession();
     session.startTransaction();
 
@@ -79,27 +84,39 @@ export class VacanciesService {
     try {
       vacancy = await this.vacancyModel.findByIdAndUpdate(
         id,
-        updateVacancyDto,
+        pickBy(updateVacancyDto, (c) => !isEmpty(c)),
         {
           new: true,
           useFindAndModify: false,
         },
       );
-      const { company: currCompany } = vacancy;
-
-      !!prevCompany &&
+      // remove compnay if currCompany is ""
+      if (String(currCompany) === '') {
+        vacancy = await this.vacancyModel.findByIdAndUpdate(
+          id,
+          {
+            $unset: { company: 0 } as any,
+          },
+          {
+            new: true,
+            useFindAndModify: false,
+          },
+        );
+      }
+      !!prevCompany && // if vacancy doesn't belong to one company before
         (await this.companyService.removeVacancyFromCompany({
           companyId: prevCompany as any,
           vacancy: vacancy._id,
         }));
 
-      !!currCompany &&
+      !!currCompany && // if vacancy doesn't belong to one company now
         (await this.companyService.addVacancyToCompany({
           companyId: currCompany as any,
           vacancy: vacancy._id,
         }));
       await session.commitTransaction();
     } catch (err) {
+      // log into New Relic in Production
       await session.abortTransaction();
     } finally {
       session.endSession;
@@ -110,8 +127,13 @@ export class VacanciesService {
   }
 
   async remove(id: string) {
-    await this.findById(id);
+    const { company } = await this.findById(id);
     await this.vacancyModel.findByIdAndDelete(id);
+    !!company &&
+      (await this.companyService.removeUserFromCompany({
+        companyId: String(company),
+        user: id,
+      }));
   }
 
   private async permit(vacancy: Vacancy) {
