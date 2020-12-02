@@ -6,8 +6,6 @@ import { Connection, Model } from 'mongoose';
 import { UpdateVacancyDto } from './dto/update.dto';
 import { Vacancy } from './schemas/vacancy.schema';
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
