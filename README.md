@@ -16,7 +16,8 @@
 - Testing on Relational Entity Updates
 - Seeding Data Scripts
 - Unit Testing
-  - Need mock services, models and so on. Bunch of workload.
-  - Need both positive and negative test.
+  - Currently, there are dependencies between each module, which is not ideal at all.
+  - In future, we need **mock** 3rd party `providers`, `models` and so on. Bunch of workload.
+  - Need both `positive` and `negative` test.
 - Transaction
-- Enable CORS
+- Enable CORS (Production)
