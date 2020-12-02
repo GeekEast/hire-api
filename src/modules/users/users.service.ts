@@ -2,17 +2,16 @@ import bcrypt from 'bcrypt';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateUserDto } from './dto/create.dto';
 import { get } from 'lodash';
-import { InjectModel } from '@nestjs/mongoose';
-import { isEmpty, pick } from 'lodash';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { pick } from 'lodash';
 import { ListUserPaginationDto } from './dto/list.dt';
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
 import { UserShowDto } from './dto/show.dto';
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -24,6 +23,7 @@ export class UsersService {
   safe_attributes: string[];
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectConnection() private readonly connection: Connection,
     private readonly companyService: CompaniesService,
   ) {
     this.safe_attributes = ['_id', 'username', 'name', 'role', 'company'];
@@ -58,19 +58,30 @@ export class UsersService {
     const hashed_password = await bcrypt.hash(password, 10);
     const role = 'user'; // new user will be assigned `user` role by default.
 
-    // create user
-    const user = (await this.userModel.create({
-      ...createUserDto,
-      hashed_password,
-      role,
-      company,
-    })) as User;
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    let user;
+    try {
+      // create user
+      user = (await this.userModel.create({
+        ...createUserDto,
+        hashed_password,
+        role,
+        company,
+      })) as User;
 
-    // add user to company
-    await this.companyService.addUserToCompany({
-      companyId: company as any,
-      user: get(user, ['_id']),
-    });
+      // add user to company
+      await this.companyService.addUserToCompany({
+        companyId: company as any,
+        user: get(user, ['_id']),
+      });
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+    } finally {
+      session.endSession();
+    }
+    if (!user) throw new InternalServerErrorException();
     return this.permit(user);
   }
 
@@ -101,25 +112,30 @@ export class UsersService {
     if (password !== confirmed_password)
       throw new AccountPasswordNotMatchConfirmException();
 
+    const session = await this.connection.startSession();
+    session.startTransaction();
     let user;
     try {
       user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
         new: true,
         useFindAndModify: false,
       });
+
+      await this.companyService.removeUserFromCompany({
+        companyId: prevCompany as any,
+        user: user._id,
+      });
+      await this.companyService.addUserToCompany({
+        companyId: currCompany as any,
+        user: user._id,
+      });
+      await session.commitTransaction();
     } catch (err) {
-      throw new HttpException(err.message, HttpStatus.FORBIDDEN);
+      await session.abortTransaction();
+    } finally {
+      session.endSession();
     }
-
-    await this.companyService.removeUserFromCompany({
-      companyId: prevCompany as any,
-      user: user._id,
-    });
-    await this.companyService.addUserToCompany({
-      companyId: currCompany as any,
-      user: user._id,
-    });
-
+    if (!user) throw new InternalServerErrorException();
     return this.permit(user);
   }
 

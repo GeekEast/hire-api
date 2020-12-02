@@ -1,14 +1,15 @@
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CreateVacancyDto } from './dto/create.dto';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ListVacancyPaginationDto } from './dto/list.dto';
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { UpdateVacancyDto } from './dto/update.dto';
 import { Vacancy } from './schemas/vacancy.schema';
 import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { pick } from 'lodash';
@@ -18,6 +19,7 @@ export class VacanciesService {
   safe_attributes: string[];
   constructor(
     @InjectModel(Vacancy.name) private vacancyModel: Model<Vacancy>,
+    @InjectConnection() private readonly connection: Connection,
     private readonly companyService: CompaniesService,
   ) {
     this.safe_attributes = [
@@ -46,17 +48,31 @@ export class VacanciesService {
   }
 
   async create(createVacancyDto: CreateVacancyDto) {
-    const vacancy = await this.vacancyModel.create(createVacancyDto);
-    const { company } = vacancy;
-    await this.companyService.addVacancyToCompany({
-      companyId: company as any,
-      vacancy,
-    });
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    let vacancy;
+    try {
+      vacancy = await this.vacancyModel.create(createVacancyDto);
+      const { company } = vacancy;
+      await this.companyService.addVacancyToCompany({
+        companyId: company as any,
+        vacancy,
+      });
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+    } finally {
+      session.endSession();
+    }
+
+    if (!vacancy) throw new InternalServerErrorException();
     return this.permit(vacancy);
   }
 
   async update(id: string, updateVacancyDto: UpdateVacancyDto) {
     const { company: prevCompany } = await this.findById(id);
+    const session = await this.connection.startSession();
+    session.startTransaction();
     let vacancy;
     try {
       vacancy = await this.vacancyModel.findByIdAndUpdate(
@@ -67,20 +83,23 @@ export class VacanciesService {
           useFindAndModify: false,
         },
       );
+      const { company: currCompany } = vacancy;
+
+      await this.companyService.removeVacancyFromCompany({
+        companyId: prevCompany as any,
+        vacancy: vacancy._id,
+      });
+      await this.companyService.addVacancyToCompany({
+        companyId: currCompany as any,
+        vacancy: vacancy._id,
+      });
+      await session.commitTransaction();
     } catch (err) {
-      throw new HttpException(err.message, HttpStatus.FORBIDDEN);
+      await session.abortTransaction();
+    } finally {
+      session.endSession;
     }
-    const { company: currCompany } = vacancy;
-
-    await this.companyService.removeVacancyFromCompany({
-      companyId: prevCompany as any,
-      vacancy: vacancy._id,
-    });
-    await this.companyService.addVacancyToCompany({
-      companyId: currCompany as any,
-      vacancy: vacancy._id,
-    });
-
+    if (!vacancy) throw new InternalServerErrorException();
     return this.permit(vacancy);
   }
 
