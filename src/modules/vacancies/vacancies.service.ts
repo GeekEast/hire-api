@@ -39,7 +39,7 @@ export class VacanciesService {
     const { limit, skip } = listVacancyPaginationDto;
     return await this.vacancyModel
       .find()
-      .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
+      // .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
       .limit(limit)
       .skip(skip)
       .select(this.safe_attributes);
@@ -48,14 +48,16 @@ export class VacanciesService {
   async create(createVacancyDto: CreateVacancyDto) {
     const session = await this.connection.startSession();
     session.startTransaction();
+
     let vacancy;
     try {
       vacancy = await this.vacancyModel.create(createVacancyDto);
       const { company } = vacancy;
-      await this.companyService.addVacancyToCompany({
-        companyId: company as any,
-        vacancy,
-      });
+      !!company && // if user inputs company as ""
+        (await this.companyService.addVacancyToCompany({
+          companyId: company as any,
+          vacancy,
+        }));
       await session.commitTransaction();
     } catch (err) {
       await session.abortTransaction();
@@ -69,8 +71,10 @@ export class VacanciesService {
 
   async update(id: string, updateVacancyDto: UpdateVacancyDto) {
     const { company: prevCompany } = await this.findById(id);
+
     const session = await this.connection.startSession();
     session.startTransaction();
+
     let vacancy;
     try {
       vacancy = await this.vacancyModel.findByIdAndUpdate(
@@ -83,20 +87,24 @@ export class VacanciesService {
       );
       const { company: currCompany } = vacancy;
 
-      await this.companyService.removeVacancyFromCompany({
-        companyId: prevCompany as any,
-        vacancy: vacancy._id,
-      });
-      await this.companyService.addVacancyToCompany({
-        companyId: currCompany as any,
-        vacancy: vacancy._id,
-      });
+      !!prevCompany &&
+        (await this.companyService.removeVacancyFromCompany({
+          companyId: prevCompany as any,
+          vacancy: vacancy._id,
+        }));
+
+      !!currCompany &&
+        (await this.companyService.addVacancyToCompany({
+          companyId: currCompany as any,
+          vacancy: vacancy._id,
+        }));
       await session.commitTransaction();
     } catch (err) {
       await session.abortTransaction();
     } finally {
       session.endSession;
     }
+
     if (!vacancy) throw new InternalServerErrorException();
     return this.permit(vacancy);
   }

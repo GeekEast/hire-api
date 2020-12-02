@@ -43,7 +43,7 @@ export class UsersService {
     const { limit, skip } = listUserPagination;
     return await this.userModel
       .find()
-      .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
+      // .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
       .limit(limit)
       .skip(skip)
       .select(this.safe_attributes);
@@ -51,8 +51,10 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const { username, password, confirmed_password, company } = createUserDto;
+
     const exist_user = await this.userModel.findOne({ username });
     if (exist_user) throw new UserAccountExistException();
+
     if (password !== confirmed_password)
       throw new AccountPasswordNotMatchConfirmException();
     const hashed_password = await bcrypt.hash(password, 10);
@@ -60,6 +62,7 @@ export class UsersService {
 
     const session = await this.connection.startSession();
     session.startTransaction();
+
     let user;
     try {
       // create user
@@ -71,10 +74,11 @@ export class UsersService {
       })) as User;
 
       // add user to company
-      await this.companyService.addUserToCompany({
-        companyId: company as any,
-        user: get(user, ['_id']),
-      });
+      !!company && // if user input company as ""
+        (await this.companyService.addUserToCompany({
+          companyId: company as any,
+          user: get(user, ['_id']),
+        }));
       await session.commitTransaction();
     } catch (err) {
       await session.abortTransaction();
@@ -114,6 +118,7 @@ export class UsersService {
 
     const session = await this.connection.startSession();
     session.startTransaction();
+
     let user;
     try {
       user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
@@ -121,14 +126,17 @@ export class UsersService {
         useFindAndModify: false,
       });
 
-      await this.companyService.removeUserFromCompany({
-        companyId: prevCompany as any,
-        user: user._id,
-      });
-      await this.companyService.addUserToCompany({
-        companyId: currCompany as any,
-        user: user._id,
-      });
+      !!prevCompany && // if user doesnt' belong to one company before
+        (await this.companyService.removeUserFromCompany({
+          companyId: prevCompany as any,
+          user: user._id,
+        }));
+
+      !!currCompany && // if user doesn't belong to one company now
+        (await this.companyService.addUserToCompany({
+          companyId: currCompany as any,
+          user: user._id,
+        }));
       await session.commitTransaction();
     } catch (err) {
       await session.abortTransaction();
