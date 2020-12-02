@@ -17,6 +17,7 @@
 - use cases for mongodb
 <p align="center"><img style="display: block; width: 600px; margin: 0 auto;" src=img/2020-12-02-21-19-01.png alt="no image found"></p>
 
+- What does the `Story` mean in the project requirement pdf?
 ### What Need to Do?
 - Testing on Relational Entity Updates (Current)
 - API Design **Documentation** (Future)
