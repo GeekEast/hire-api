@@ -51,8 +51,8 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const { username, password, confirmed_password, company } = createUserDto;
-    const exist_user = await this.userModel.find({ username });
-    if (!isEmpty(exist_user)) throw new UserAccountExistException();
+    const exist_user = await this.userModel.findOne({ username });
+    if (exist_user) throw new UserAccountExistException();
     if (password !== confirmed_password)
       throw new AccountPasswordNotMatchConfirmException();
     const hashed_password = await bcrypt.hash(password, 10);

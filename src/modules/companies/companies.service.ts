@@ -1,15 +1,16 @@
 import { AddUserToCompanyDto } from './dto/addUser.dto';
 import { AddVacancyToCompanyDto } from './dto/addVacancy.dto';
 import { Company } from './schemas/company.schema';
+import { CompanyExistException } from 'exceptions';
+import { CreateCompanyDto } from './dto/create.dto';
 import { IndexCompanyDto } from './dto/list.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RemoveUserFromCompanyDto } from './dto/removeUser.dto';
-import { UpdateCompanyDto } from './dto/update.dto';
-import { RemoveVacancyFromCompanyDto } from './dto/removeVacancy.dto';
-import { CreateCompanyDto } from './dto/create.dto';
 import { pick } from 'lodash';
+import { RemoveUserFromCompanyDto } from './dto/removeUser.dto';
+import { RemoveVacancyFromCompanyDto } from './dto/removeVacancy.dto';
+import { UpdateCompanyDto } from './dto/update.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -34,7 +35,10 @@ export class CompaniesService {
   }
 
   async create(createCompanyDto: CreateCompanyDto) {
-    const company = new this.companyModel(createCompanyDto).save();
+    const { name } = createCompanyDto;
+    const exist_company = await this.companyModel.findOne({ name });
+    if (exist_company) throw new CompanyExistException();
+    const company = await new this.companyModel(createCompanyDto).save();
     return this.permit(company);
   }
 

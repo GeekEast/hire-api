@@ -1,5 +1,16 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
+export class CompanyExistException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: 'Company already exist by this name.',
+      },
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}
 export class UserAccountExistException extends HttpException {
   constructor() {
     super(

@@ -6,10 +6,10 @@ import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
 
 @Schema()
 export class Company extends Document {
-  @Prop()
+  @Prop({ required: true, unique: true, index: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   address: string;
 
   @Prop({

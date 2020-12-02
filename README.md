@@ -14,6 +14,7 @@
 
 ### What Need to Do?
 - Testing on Relational Entity Updates
+- API Design **Documentation**
 - Seeding Data Scripts
 - Unit Testing
   - Currently, there are dependencies between each module, which is not ideal at all.
