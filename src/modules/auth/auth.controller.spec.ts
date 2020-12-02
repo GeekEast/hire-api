@@ -1,5 +1,11 @@
+import { CompaniesService } from 'modules/companies/companies.service';
+import { UsersService } from 'modules/users/users.service';
+import { AuthService } from './auth.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
+import { JwtService } from '@nestjs/jwt';
+import { UserSchema } from 'modules/users/schemas/user.schema';
+import { CompanySchema } from 'modules/companies/schemas/company.schema';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -7,6 +13,15 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
+      providers: [
+        AuthService,
+        UsersService,
+        CompaniesService,
+        JwtService,
+        { provide: 'UserModel', useValue: UserSchema },
+        { provide: 'CompanyModel', useValue: CompanySchema },
+        { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
+      ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);

@@ -16,5 +16,7 @@
 - Testing on Relational Entity Updates
 - Seeding Data Scripts
 - Unit Testing
+  - Need mock services, models and so on. Bunch of workload.
+  - Need both positive and negative test.
 - Transaction
 - Enable CORS

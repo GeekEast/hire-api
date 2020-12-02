@@ -1,3 +1,6 @@
+import { CompanySchema } from './../companies/schemas/company.schema';
+import { CompaniesService } from 'modules/companies/companies.service';
+import { VacancySchema } from './schemas/vacancy.schema';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VacanciesService } from './vacancies.service';
 
@@ -6,7 +9,12 @@ describe('VacanciesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [VacanciesService],
+      providers: [
+        VacanciesService,
+        CompaniesService,
+        { provide: 'VacancyModel', useValue: VacancySchema },
+        { provide: 'CompanyModel', useValue: CompanySchema },
+      ],
     }).compile();
 
     service = module.get<VacanciesService>(VacanciesService);

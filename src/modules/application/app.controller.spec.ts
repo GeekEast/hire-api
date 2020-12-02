@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.index()).toBe('Hello World!');
+    it('should return "Welcome to the Hire API."', () => {
+      expect(appController.index()).toBe('Welcome to the Hire API.');
     });
   });
 });
