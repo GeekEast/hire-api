@@ -16,6 +16,7 @@
 - Testing on Relational Entity Updates
 - API Design **Documentation**
 - Transaction (!important)
+- Database cascading operation
 - Seeding Data Scripts
 - Unit Testing
   - Currently, there are dependencies between each module, which is not ideal at all.

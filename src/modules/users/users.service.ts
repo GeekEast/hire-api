@@ -1,14 +1,14 @@
 import bcrypt from 'bcrypt';
 import { CompaniesService } from 'modules/companies/companies.service';
-import { CreateUserDto } from './dto/create.dto';
-import { get } from 'lodash';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { pick } from 'lodash';
-import { ListUserPaginationDto } from './dto/list.dt';
 import { Connection, Model } from 'mongoose';
+import { CreateUserDto } from './dto/create.dto';
+import { get, isEmpty, pick, pickBy } from 'lodash';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { ListUserPaginationDto } from './dto/list.dt';
 import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
 import { UserShowDto } from './dto/show.dto';
+
 import {
   Injectable,
   InternalServerErrorException,
@@ -18,6 +18,7 @@ import {
   AccountPasswordNotMatchConfirmException,
   UserAccountExistException,
 } from 'exceptions';
+
 @Injectable()
 export class UsersService {
   safe_attributes: string[];
@@ -65,13 +66,19 @@ export class UsersService {
 
     let user;
     try {
-      // create user
-      user = (await this.userModel.create({
+      const loose_create_user = {
         ...createUserDto,
         hashed_password,
         role,
         company,
-      })) as User;
+      };
+      const compacted_user = pickBy(
+        loose_create_user,
+        (c) => !isEmpty(c),
+      ) as any;
+
+      // create user
+      user = (await this.userModel.create(compacted_user)) as User;
 
       // add user to company
       !!company && // if user input company as ""
@@ -121,17 +128,36 @@ export class UsersService {
 
     let user;
     try {
-      user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
-        new: true,
-        useFindAndModify: false,
-      });
+      // skip if company is ""
+      user = await this.userModel.findByIdAndUpdate(
+        id,
+        {
+          $set: pickBy(updateUserDto, (c) => !isEmpty(c)) as any,
+        },
+        {
+          new: true,
+          useFindAndModify: false,
+        },
+      );
 
+      // remove company
+      if (String(currCompany) === '') {
+        user = await this.userModel.findByIdAndUpdate(
+          id,
+          {
+            $unset: { company: 0 } as any,
+          },
+          {
+            new: true,
+            useFindAndModify: false,
+          },
+        );
+      }
       !!prevCompany && // if user doesnt' belong to one company before
         (await this.companyService.removeUserFromCompany({
           companyId: prevCompany as any,
           user: user._id,
         }));
-
       !!currCompany && // if user doesn't belong to one company now
         (await this.companyService.addUserToCompany({
           companyId: currCompany as any,
