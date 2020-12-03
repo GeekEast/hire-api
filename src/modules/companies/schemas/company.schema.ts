@@ -7,18 +7,6 @@ export class Company extends Document {
 
   @Prop({ required: true })
   address: string;
-
-  // @Prop({
-  //   type: [{ type: mongoose.Schema.Types.ObjectId, ref: User?.name || 'User' }],
-  // })
-  // users: User[];
-
-  // @Prop({
-  //   type: [
-  //     { type: mongoose.Schema.Types.ObjectId, ref: Vacancy?.name || 'Vacancy' },
-  //   ],
-  // })
-  // vacancies: Vacancy[];
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);

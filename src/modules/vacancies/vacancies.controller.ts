@@ -1,3 +1,4 @@
+import { VacanciesSortDto } from './dto/sort.dto';
 import { CreateVacancyDto } from './dto/create.dto';
 import { ListVacancyPaginationDto } from './dto/list.dto';
 import { Role } from 'modules/auth/decorators/roles.decorator';
@@ -17,14 +18,18 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ParseSortPipe } from 'pipes/sort.pipe';
 
 @Controller('vacancies')
 export class VacanciesController {
   constructor(private readonly vacanciesService: VacanciesService) {}
 
   @Get('')
-  index(@Query() listVacancyPagination: ListVacancyPaginationDto) {
-    return this.vacanciesService.findAll(listVacancyPagination);
+  index(
+    @Query() listVacancyPagination: ListVacancyPaginationDto,
+    @Query('sort', ParseSortPipe) sort: VacanciesSortDto,
+  ) {
+    return this.vacanciesService.findAll({ ...listVacancyPagination, sort });
   }
 
   @Get('/:id')

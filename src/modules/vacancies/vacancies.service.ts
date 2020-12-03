@@ -1,3 +1,4 @@
+import { VacanciesSortDto } from './dto/sort.dto';
 import { ClientSession, Model } from 'mongoose';
 import { CreateVacancyDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -32,16 +33,22 @@ export class VacanciesService {
     return this.permit(vacancy);
   }
 
-  async findAll(listVacancyPaginationDto: ListVacancyPaginationDto) {
-    const { limit, skip, populate } = listVacancyPaginationDto;
+  async findAll(listVacancyPaginationDto: {
+    limit?: number;
+    skip?: number;
+    populate?: number;
+    sort?: VacanciesSortDto;
+  }) {
+    const { limit, skip, populate, sort } = listVacancyPaginationDto;
     return await this.vacancyModel
       .find()
+      .sort(sort)
+      .limit(limit)
+      .skip(skip)
       .populate(
         !!populate ? 'company' : 'dto',
         this.safe_slim_company_attributes,
       )
-      .limit(limit)
-      .skip(skip)
       .select(this.safe_attributes);
   }
 

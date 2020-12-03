@@ -1,10 +1,11 @@
-import { User } from './schemas/user.schema';
 import { ListUserPaginationDto } from './dto/list.dt';
+import { ParseSortPipe } from 'pipes/sort.pipe';
 import { Role } from 'modules/auth/decorators/roles.decorator';
 import { RoleEnum } from 'modules/auth/enums/role.enum';
 import { RolesGuard } from 'modules/auth/guards/roles.guard';
 import { UpdateUserDto } from './dto/update.dto';
 import { UserShowDto } from './dto/show.dto';
+import { UserSortDto } from './dto/sort.dto';
 import { UsersService } from './users.service';
 import {
   Body,
@@ -14,15 +15,12 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseBoolPipe,
   Patch,
   Put,
   Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ParseSortPipe } from 'pipes/sort.pipe';
-import { UserSortDto } from './dto/sort.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

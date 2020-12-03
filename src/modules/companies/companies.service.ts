@@ -1,3 +1,5 @@
+import { VacanciesSortDto } from './../vacancies/dto/sort.dto';
+import { CompanySortDto } from './dto/sort.dto';
 import { UsersService } from 'modules/users/users.service';
 import { Company } from './schemas/company.schema';
 import { CompanyExistException } from 'exceptions/custom';
@@ -13,6 +15,7 @@ import { UpdateCompanyDto } from './dto/update.dto';
 import { User } from 'modules/users/schemas/user.schema';
 import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
 import { VacanciesService } from 'modules/vacancies/vacancies.service';
+import { UserSortDto } from 'modules/users/dto/sort.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -40,36 +43,57 @@ export class CompaniesService {
     return this.permit(company);
   }
 
-  async findUsersById(id: string, showCompanyUsersDto: ShowCompanyUserDto) {
-    const { limit, skip } = showCompanyUsersDto;
+  async findUsersById(
+    id: string,
+    showCompanyUsersDto: {
+      limit?: number;
+      skip?: number;
+      populate?: number;
+      sort?: UserSortDto;
+    },
+  ) {
+    const { limit, skip, sort } = showCompanyUsersDto;
     const users = await this.userModel
       .find({ company: id as any })
-      .limit(limit)
+      .sort(sort)
       .skip(skip)
+      .limit(limit)
       .select(this.safe_user_attributes);
     return users;
   }
 
   async findVacanciesById(
     id: string,
-    showCompanyVacancies: ShowCompanyVacancies,
+    showCompanyVacancies: {
+      limit?: number;
+      skip?: number;
+      populate?: number;
+      sort?: VacanciesSortDto;
+    },
   ) {
-    const { limit, skip } = showCompanyVacancies;
+    const { limit, skip, sort } = showCompanyVacancies;
     const vacancies = await this.vacancyModel
       .find({ company: id as any })
-      .limit(limit)
+      .sort(sort)
       .skip(skip)
+      .limit(limit)
       .select(this.safe_vacancy_attributes);
     return vacancies;
   }
 
-  async findAll(indexCompanyDto: IndexCompanyDto) {
-    const { skip, limit } = indexCompanyDto;
+  async findAll(indexCompanyDto: {
+    limit?: number;
+    skip?: number;
+    populate?: number;
+    sort?: CompanySortDto;
+  }) {
+    const { skip, limit, sort } = indexCompanyDto;
     return await this.companyModel
       .find()
-      .select(this.safe_slim_attributes)
+      .sort(sort)
+      .skip(skip)
       .limit(limit)
-      .skip(skip);
+      .select(this.safe_slim_attributes);
   }
 
   async create(createCompanyDto: CreateCompanyDto) {

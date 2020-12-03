@@ -4,7 +4,6 @@ import { ClientSession, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty, pick, pickBy } from 'lodash';
-import { ListUserPaginationDto } from './dto/list.dt';
 import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
 import { UserShowDto } from './dto/show.dto';
@@ -50,13 +49,13 @@ export class UsersService {
     const { limit, skip, populate, sort } = listUserPagination;
     return await this.userModel
       .find()
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
       .populate(
         !!populate ? 'company' : 'dto',
         this.safe_slim_company_attributes,
       )
-      .limit(limit)
-      .skip(skip)
-      .sort(sort)
       .select(this.safe_attributes);
   }
 

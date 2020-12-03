@@ -13,6 +13,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     if (exception.status) status = exception.status;
     if (exception.name === 'CastError') status = HttpStatus.BAD_REQUEST;
 
+    console.log(exception);
     response.status(status).json({
       status,
       error:
