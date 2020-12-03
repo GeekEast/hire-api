@@ -5,24 +5,24 @@ services:
     container_name: api
     build: .
     volumes:
-      - .:/user/src/app
+      - .:/user/src/app # real-time folder mapping
       - /usr/src/app/node_modules
     ports:
       - 3000:3000
-    command: sh /usr/src/app/start.docker.sh
+    command: yarn start:dev
     env_file:
       - .docker.development.env
     depends_on:
       - mongodb
   mongodb:
-    container_name: mongodb
-    image: mongo
-    restart: always
+    image: mongo:latest
+    container_name: "mongodb"
+    env_file:
+      - .docker.development.env
     ports:
       - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: root-db
     volumes:
-      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - db-data:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+volumes:
+  db-data:

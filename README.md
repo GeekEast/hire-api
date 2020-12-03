@@ -80,6 +80,7 @@ db.createUser({
 - Destroy: `docker-compose down`
 - `docker-compose.yml` env vars injection happens in after `docker run`, not when `docker build`.
 ### Problems
-- [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1)
+- [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1), solution:
+> By default Compose sets up a single network for your app. Each container for a service joins the default network and is both reachable by other containers on that network, and discoverable by them at a hostname identical to the container name.
 - Should develop `GraphQL` first, then `API` and then `MongoDB`. (**Mongo way**)
 - Grapql should be responsible for `assembling` data from API **dumb** endpoints.
