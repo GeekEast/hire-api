@@ -26,7 +26,7 @@ export class UsersController {
   @Get('/username/:username')
   @Role(RoleEnum.Admin)
   @UseGuards(RolesGuard)
-  async showByUsername(@Param('username') username: UserShowDto) {
+  showByUsername(@Param('username') username: UserShowDto) {
     return this.usersService.findByUsername(username);
   }
 
@@ -46,16 +46,13 @@ export class UsersController {
 
   @Patch('/me')
   @HttpCode(HttpStatus.OK)
-  async partial_update_me(
-    @Body() updateUserDto: UpdateUserDto,
-    @Request() req,
-  ) {
+  partial_update_me(@Body() updateUserDto: UpdateUserDto, @Request() req) {
     return this.usersService.update(req.user, updateUserDto);
   }
 
   @Put('/me')
   @HttpCode(HttpStatus.OK)
-  async update_me(@Body() updateUserDto: UpdateUserDto, @Request() req) {
+  update_me(@Body() updateUserDto: UpdateUserDto, @Request() req) {
     return this.usersService.update(req.user, updateUserDto);
   }
 
@@ -83,5 +80,13 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Delete('/:id/company')
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  remove_company(@Param('id') id: string) {
+    return this.usersService.removeCompany(id);
   }
 }

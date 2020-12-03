@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { saveRoutesToJson } from 'utils';
 import { AppModule } from 'modules/application/app.module';
 import { ConfigService } from '@nestjs/config';
+import { AllExceptionsFilter } from 'exceptions/filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,7 @@ async function bootstrap() {
       },
     }),
   );
+  app.useGlobalFilters(new AllExceptionsFilter());
   const port = configService.get<number>('api.port');
   await app.listen(port || 3000);
   saveRoutesToJson(app);

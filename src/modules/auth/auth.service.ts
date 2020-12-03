@@ -10,7 +10,7 @@ import { get } from 'lodash';
 import {
   AccountPasswordNotMatchException,
   UserNotFoundException,
-} from 'exceptions';
+} from 'exceptions/custom';
 @Injectable()
 export class AuthService {
   constructor(

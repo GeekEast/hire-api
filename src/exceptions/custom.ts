@@ -1,5 +1,17 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
+export class InvalidObjectIdException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: 'Invalid Object Id.',
+      },
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}
+
 export class CompanyExistException extends HttpException {
   constructor() {
     super(

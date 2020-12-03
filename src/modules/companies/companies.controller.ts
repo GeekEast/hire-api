@@ -1,3 +1,4 @@
+import { ShowCompanyVacancies } from './dto/showVacancies.dto';
 import { CompaniesService } from './companies.service';
 import { IndexCompanyDto } from './dto/list.dto';
 import { UpdateCompanyDto } from './dto/update.dto';
@@ -13,6 +14,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create.dto';
+import { ShowCompanyUserDto } from './dto/showUsers.dto';
 
 @Controller('companies')
 export class CompaniesController {
@@ -31,6 +33,22 @@ export class CompaniesController {
   @Get('/:id')
   show(@Param('id') id: string) {
     return this.companiesService.findById(id);
+  }
+
+  @Get('/:id/users')
+  showUser(
+    @Param('id') id: string,
+    @Query() showCompanyUsersDto: ShowCompanyUserDto,
+  ) {
+    return this.companiesService.findUsersById(id, showCompanyUsersDto);
+  }
+
+  @Get('/:id/vacancies')
+  showVacancy(
+    @Param('id') id: string,
+    @Query() showCompanyVacancies: ShowCompanyVacancies,
+  ) {
+    return this.companiesService.findVacanciesById(id, showCompanyVacancies);
   }
 
   @Patch('/:id')

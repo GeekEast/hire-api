@@ -18,6 +18,10 @@ import {
   Company,
   CompanySchema,
 } from 'modules/companies/schemas/company.schema';
+import {
+  Vacancy,
+  VacancySchema,
+} from 'modules/vacancies/schemas/vacancy.schema';
 
 @Module({
   imports: [
@@ -34,6 +38,7 @@ import {
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Company.name, schema: CompanySchema },
+      { name: Vacancy.name, schema: VacancySchema },
     ]),
   ],
   providers: [

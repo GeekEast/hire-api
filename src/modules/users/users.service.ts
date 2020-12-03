@@ -2,8 +2,8 @@ import bcrypt from 'bcrypt';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { Connection, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create.dto';
-import { get, isEmpty, pick, pickBy } from 'lodash';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { isEmpty, pick, pickBy } from 'lodash';
 import { ListUserPaginationDto } from './dto/list.dt';
 import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
@@ -16,18 +16,22 @@ import {
 } from '@nestjs/common';
 import {
   AccountPasswordNotMatchConfirmException,
+  InvalidObjectIdException,
   UserAccountExistException,
-} from 'exceptions';
+} from 'exceptions/custom';
 
 @Injectable()
 export class UsersService {
   safe_attributes: string[];
+  safe_slim_company_attributes: string[];
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
-    @InjectConnection() private readonly connection: Connection,
-    private readonly companyService: CompaniesService,
+    @InjectModel(User.name)
+    private userModel: Model<User>,
+    @InjectConnection() private connection: Connection,
+    private companyService: CompaniesService,
   ) {
     this.safe_attributes = ['_id', 'username', 'name', 'role', 'company'];
+    this.safe_slim_company_attributes = ['_id', 'name', 'address'];
   }
 
   async findByUsername(userShowDto: UserShowDto) {
@@ -41,10 +45,13 @@ export class UsersService {
   }
 
   async findAll(listUserPagination: ListUserPaginationDto) {
-    const { limit, skip } = listUserPagination;
+    const { limit, skip, populate } = listUserPagination;
     return await this.userModel
       .find()
-      // .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
+      .populate(
+        !!populate ? 'company' : 'dto',
+        this.safe_slim_company_attributes,
+      )
       .limit(limit)
       .skip(skip)
       .select(this.safe_attributes);
@@ -61,9 +68,6 @@ export class UsersService {
     const hashed_password = await bcrypt.hash(password, 10);
     const role = 'user'; // new user will be assigned `user` role by default.
 
-    const session = await this.connection.startSession();
-    session.startTransaction();
-
     let user;
     try {
       const loose_create_user = {
@@ -76,22 +80,9 @@ export class UsersService {
         loose_create_user,
         (c) => !isEmpty(c),
       ) as any;
-
-      // create user
       user = (await this.userModel.create(compacted_user)) as User;
-
-      // add user to company
-      !!company && // if user input company as ""
-        (await this.companyService.addUserToCompany({
-          companyId: company as any,
-          user: get(user, ['_id']),
-        }));
-      await session.commitTransaction();
     } catch (err) {
-      // log into New Relic in Production
-      await session.abortTransaction();
-    } finally {
-      session.endSession();
+      throw new InvalidObjectIdException();
     }
     if (!user) throw new InternalServerErrorException();
     return this.permit(user);
@@ -108,19 +99,38 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    const { company } = await this.findById(id);
-    await this.userModel.findByIdAndDelete(id);
-    !!company &&
-      (await this.companyService.removeUserFromCompany({
-        companyId: String(company),
-        user: id,
-      }));
+    try {
+      await this.userModel.findByIdAndDelete(id);
+    } catch (err) {
+      throw new InvalidObjectIdException();
+    }
+  }
+
+  async removeCompany(id: string) {
+    try {
+      return await this.userModel.findByIdAndUpdate(
+        id,
+        {
+          $unset: { company: 0 } as any,
+        },
+        { new: true, useFindAndModify: false },
+      );
+    } catch (err) {
+      throw new InvalidObjectIdException();
+    }
+  }
+
+  async unsafeFindByUsername(userShowDto: UserShowDto) {
+    const { username } = userShowDto;
+    const user = await this.userModel.findOne({ username });
+    if (!user) throw new NotFoundException();
+    return user;
   }
 
   // --------------------- private methods -------------------------
 
   private async updateAnyUser(currUser: User, updateUserDto: UpdateUserDto) {
-    const { id, company: prevCompany } = currUser;
+    const { id } = currUser;
     const {
       password,
       confirmed_password,
@@ -129,62 +139,22 @@ export class UsersService {
     if (password !== confirmed_password)
       throw new AccountPasswordNotMatchConfirmException();
 
-    const session = await this.connection.startSession();
-    session.startTransaction();
-
     let user;
     try {
-      // skip if company is ""
+      // step 1: normal update, Internal Error might happen
       user = await this.userModel.findByIdAndUpdate(
         id,
-        {
-          $set: pickBy(updateUserDto, (c) => !isEmpty(c)) as any,
-        },
+        pickBy(updateUserDto, (c) => !isEmpty(c)),
         {
           new: true,
           useFindAndModify: false,
         },
       );
-
-      // remove company remove compnay if currCompany is ""
-      if (String(currCompany) === '') {
-        user = await this.userModel.findByIdAndUpdate(
-          id,
-          {
-            $unset: { company: 0 } as any,
-          },
-          {
-            new: true,
-            useFindAndModify: false,
-          },
-        );
-      }
-      !!prevCompany && // if user doesn't belong to one company before
-        (await this.companyService.removeUserFromCompany({
-          companyId: prevCompany as any,
-          user: user._id,
-        }));
-      !!currCompany && // if user doesn't belong to one company now
-        (await this.companyService.addUserToCompany({
-          companyId: currCompany as any,
-          user: user._id,
-        }));
-      await session.commitTransaction();
     } catch (err) {
-      // log into New Relic in Production
-      await session.abortTransaction();
-    } finally {
-      session.endSession();
+      throw new InvalidObjectIdException();
     }
-    if (!user) throw new InternalServerErrorException();
-    return this.permit(user);
-  }
-
-  async unsafeFindByUsername(userShowDto: UserShowDto) {
-    const { username } = userShowDto;
-    const user = await this.userModel.findOne({ username });
     if (!user) throw new NotFoundException();
-    return user;
+    return this.permit(user);
   }
 
   private async unsafeFindById(id: string) {

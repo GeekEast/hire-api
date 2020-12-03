@@ -8,15 +8,18 @@ import {
   Company,
   CompanySchema,
 } from 'modules/companies/schemas/company.schema';
+import { User, UserSchema } from 'modules/users/schemas/user.schema';
+import { UsersService } from 'modules/users/users.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Vacancy.name, schema: VacancySchema },
       { name: Company.name, schema: CompanySchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
-  providers: [VacanciesService, CompaniesService],
+  providers: [VacanciesService, CompaniesService, UsersService],
   controllers: [VacanciesController],
 })
 export class VacanciesModule {}

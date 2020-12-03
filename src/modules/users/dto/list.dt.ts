@@ -8,4 +8,8 @@ export class ListUserPaginationDto {
   @IsOptional()
   @IsNumber()
   skip: number;
+
+  @IsOptional()
+  @IsNumber()
+  populate: number;
 }

@@ -1,8 +1,10 @@
+import { InvalidObjectIdException } from '../../exceptions/custom';
 import { CompaniesService } from 'modules/companies/companies.service';
+import { Connection, Model } from 'mongoose';
 import { CreateVacancyDto } from './dto/create.dto';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { isEmpty, pick, pickBy } from 'lodash';
 import { ListVacancyPaginationDto } from './dto/list.dto';
-import { Connection, Model } from 'mongoose';
 import { UpdateVacancyDto } from './dto/update.dto';
 import { Vacancy } from './schemas/vacancy.schema';
 import {
@@ -10,11 +12,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { pick, isEmpty, pickBy } from 'lodash';
 
 @Injectable()
 export class VacanciesService {
   safe_attributes: string[];
+  safe_company_attributes: string[];
   constructor(
     @InjectModel(Vacancy.name) private vacancyModel: Model<Vacancy>,
     @InjectConnection() private readonly connection: Connection,
@@ -27,19 +29,31 @@ export class VacanciesService {
       'expiredAt',
       'company',
     ];
+    this.safe_company_attributes = [
+      '_id',
+      'vacancies',
+      'users',
+      'name',
+      'address',
+    ];
   }
 
   async findById(id: string) {
-    const vacancy = await this.vacancyModel.findById(id);
+    let vacancy;
+    try {
+      vacancy = await this.vacancyModel.findById(id);
+    } catch (err) {
+      throw new InvalidObjectIdException();
+    }
     if (!vacancy) throw new NotFoundException();
     return this.permit(vacancy);
   }
 
   async findAll(listVacancyPaginationDto: ListVacancyPaginationDto) {
-    const { limit, skip } = listVacancyPaginationDto;
+    const { limit, skip, populate } = listVacancyPaginationDto;
     return await this.vacancyModel
       .find()
-      // .populate('company', ['_id', 'vacancies', 'users', 'name', 'address'])
+      .populate(!!populate ? 'company' : 'dto', this.safe_company_attributes)
       .limit(limit)
       .skip(skip)
       .select(this.safe_attributes);
@@ -128,13 +142,25 @@ export class VacanciesService {
 
   async remove(id: string) {
     const { company } = await this.findById(id);
-    await this.vacancyModel.findByIdAndDelete(id);
-    !!company &&
-      (await this.companyService.removeUserFromCompany({
-        companyId: String(company),
-        user: id,
-      }));
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      await this.vacancyModel.findByIdAndDelete(id);
+      !!company &&
+        (await this.companyService.removeVacancyFromCompany({
+          companyId: String(company),
+          vacancy: id,
+        }));
+      await session.commitTransaction();
+    } catch (err) {
+      // log into New Relic in Production
+      await session.abortTransaction();
+    } finally {
+      session.endSession();
+    }
   }
+
+  // --------------------- private methods -------------------------
 
   private async permit(vacancy: Vacancy) {
     return pick(vacancy, this.safe_attributes);

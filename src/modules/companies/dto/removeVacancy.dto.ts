@@ -1,5 +1,4 @@
 import { IsDefined, IsString } from 'class-validator';
-import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
 
 export class RemoveVacancyFromCompanyDto {
   @IsString()
@@ -7,5 +6,6 @@ export class RemoveVacancyFromCompanyDto {
   companyId: string;
 
   @IsDefined()
-  vacancy: Vacancy;
+  @IsString()
+  vacancy: string;
 }

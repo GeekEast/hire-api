@@ -1,15 +1,11 @@
 import { IsNumber, IsOptional } from 'class-validator';
 
-export class ListVacancyPaginationDto {
-  @IsOptional()
-  @IsNumber()
-  limit: number;
-
+export class ShowCompanyVacancies {
   @IsOptional()
   @IsNumber()
   skip: number;
 
   @IsOptional()
   @IsNumber()
-  populate: number;
+  limit: number;
 }
