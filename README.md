@@ -15,7 +15,7 @@ Mongo is not relational database. So design of the data structure can be quite d
   - For an entity that can behave like an attribute to another entity, it should be stored as nested `json` format.
   - Avoid `Circular Dependency` of module in nestjs as much as I can.
 
-### Config
+### Start
 - You need `.local.development.env` to include all the environment variables for development on you local computer.
 ```sh
 # MongDB
@@ -61,6 +61,8 @@ db.createUser({
 - develop locally `yarn start:dev`
 - develop in docker `docker-compose up -d`
 
+### Postman
+- Please import `test/HIRE API.postman_collection.json` into Postman v2.1 and test.
 ### Tasks
 - Error Logging Service: New Relic for Production.
 - Docker network bridge to solve the `host.docker.internal` problem.
