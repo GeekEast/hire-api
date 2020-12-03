@@ -3,7 +3,17 @@
 </p>
 
 ### Theory
-
+Mongo is not relational database. So design of the data structure can be quite different from common relational database practice. 
+- Entity: `User`, `Company`, `Vacancy`
+- Relationship:
+  - `company` vs `user`: One to Many
+  - `company` vs `vacancy`: One to Many
+- Foreign Key:
+  - `User`'s reference should not be stored in `company` as an **unbounded** array.
+  - `Vacancy`'s reference should not be stored in `company` as an **unbouded** array.
+  - **Relation** updated should only be handling in the `One` side of relation.
+  - For an entity that can behave like an attribute to another entity, it should be stored as nested `json` format.
+  - Avoid `Circular Dependency` of module in nestjs as much as I can.
 
 ### Config
 - You need `.local.development.env` to include all the environment variables for development on you local computer.
@@ -39,33 +49,18 @@ API_PORT=3000 # same to container's published port in docker-compose.yml
 - You need `docker-entrypoint-initdb.d` to init your dockerized mongodb.
 ```javascript
 // docker-entrypoint-initdb.d/mongo-init.js
-const db = 'dbname';
-const user = 'username';
-const pwd = 'password';
-
-db = db.getSiblingDB(db);
+db = db.getSiblingDB('dbname');
 db.createUser({
-  user,
-  pwd,
-  roles: [{ role: 'readWrite', db }],
+  user: 'dbuser',
+  pwd: 'dbpassword',
+  roles: [{ role: 'readWrite', db: 'dbname' }],
 });
+
 ```
 - Please make sure your local `API_PORT` is not used by other program.
 - develop locally `yarn start:dev`
 - develop in docker `docker-compose up -d`
 
-
-### Modeling in a Mongo Way
-- No-SQL Cascading Problem when you want to scale the application?
-  - keep foreign in only one side or the join table
-- Unbounded Array Problem (MongDB Modeling)
-  - Don't store array.
-- Circulr Dependency (nestjs)
-  - Answer is same like the firstone;
-### Insights
-- Should develop `GraphQL` first, then `API` and then `MongoDB`. (**Mongo way**)
-- Grapql should be responsible for `assembling` data from API **dumb** endpoints.
-- `docker-compose.yml` env vars injection happens in after `docker run`, not when `docker build`.
 ### Tasks
 - Error Logging Service: New Relic for Production.
 - Docker network bridge to solve the `host.docker.internal` problem.
@@ -81,5 +76,8 @@ db.createUser({
 - Bash in container `docker exec -it <container_id> /bin/sh`
 - Develop: `docker-compose up -d`
 - Destroy: `docker-compose down`
-### Bugs
+- `docker-compose.yml` env vars injection happens in after `docker run`, not when `docker build`.
+### Problems
 - [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1)
+- Should develop `GraphQL` first, then `API` and then `MongoDB`. (**Mongo way**)
+- Grapql should be responsible for `assembling` data from API **dumb** endpoints.
