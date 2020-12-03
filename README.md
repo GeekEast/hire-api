@@ -15,14 +15,15 @@ Mongo is not relational database. So design of the data structure can be quite d
   - For an entity that can behave like an attribute to another entity, it should be stored as nested `json` format.
   - Avoid `Circular Dependency` of module in nestjs as much as I can.
 
-### Start
-- You need `.local.development.env` to include all the environment variables for development on you local computer.
+### Develop
+> Make sure `API_PORT` is not used by other applications.
+- **Local**: You need `.local.development.env` to set env vars. To start, run `yarn start:dev`
 ```sh
 # MongDB
+MONGODB_HOST=localhost
 MONGODB_USERNAME=
 MONGODB_PASSWORD=
 MONGODB_DBNAME=
-MONGODB_HOST=localhost
 MONGODB_PORT=27017
 # JWT
 JWT_SECRET=
@@ -30,37 +31,21 @@ JWT_EXPIRE=1d
 # NESTJS
 API_PORT=
 ```
-- You need `.docker.development.env` to include all the environment variables for development on docker-compose mode.
+- **Docker**: You need `.docker.development.env` to set set env vars. To start, run `docker-compose up -d`
 ```sh
-# Docker
-MODE=docker # necessary for resolve host IP in start.docker.sh
 # MongDB
-MONGODB_USERNAME= # same in docker-entrypoint-initdb.d/mongo-init.js
-MONGODB_PASSWORD= # same in docker-entrypoint-initdb.d/mongo-init.js
-MONGODB_DBNAME= # same in docker-entrypoint-initdb.d/mongo-init.js
-# MONGODB_HOST don't set this field, because it will be handled by start.docker.sh
+MONGODB_HOST=<container_name of mongo service>
+MONGODB_USERNAME=
+MONGODB_PASSWORD=
+MONGODB_DBNAME=
 MONGODB_PORT=27017
 # JWT
 JWT_SECRET=
 JWT_EXPIRE=1d
 # NEST
-API_PORT=3000 # same to container's published port in docker-compose.yml
-```
-- You need `docker-entrypoint-initdb.d` to init your dockerized mongodb.
-```javascript
-// docker-entrypoint-initdb.d/mongo-init.js
-db = db.getSiblingDB('dbname');
-db.createUser({
-  user: 'dbuser',
-  pwd: 'dbpassword',
-  roles: [{ role: 'readWrite', db: 'dbname' }],
-});
-
+API_PORT=
 ```
 - Please make sure your local `API_PORT` is not used by other program.
-- develop locally `yarn start:dev`
-- develop in docker `docker-compose up -d`
-
 ### Postman
 - Please import `test/HIRE API.postman_collection.json` into Postman v2.1 and test.
 ### Tasks
@@ -80,7 +65,7 @@ db.createUser({
 - Destroy: `docker-compose down`
 - `docker-compose.yml` env vars injection happens in after `docker run`, not when `docker build`.
 ### Problems
-- [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1), solution:
+- [Host.docker.internal not resolved on Linux](https://github.com/botfront/botfront-starter/issues/1), **solution**:
 > By default Compose sets up a single network for your app. Each container for a service joins the default network and is both reachable by other containers on that network, and discoverable by them at a hostname identical to the container name.
 - Should develop `GraphQL` first, then `API` and then `MongoDB`. (**Mongo way**)
 - Grapql should be responsible for `assembling` data from API **dumb** endpoints.
