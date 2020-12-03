@@ -9,9 +9,9 @@ services:
       - /usr/src/app/node_modules
     ports:
       - 3000:3000
-    command: yarn start:dev
+    command: sh /usr/src/app/start.docker.sh
     env_file:
-      - .development.env
+      - .docker.development.env
     depends_on:
       - mongodb
   mongodb:

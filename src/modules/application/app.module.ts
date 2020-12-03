@@ -14,7 +14,7 @@ import { VacanciesModule } from 'modules/vacancies/vacancies.module';
     ConfigModule.forRoot({
       load: [appConfigs],
       isGlobal: true,
-      envFilePath: ['.development.env'],
+      envFilePath: ['.local.development.env'],
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
     MongooseModule.forRootAsync({

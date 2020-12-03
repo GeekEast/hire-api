@@ -1,8 +1,9 @@
 FROM node:12.13-alpine As Development
+RUN apk add bind-tools
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN yarn install
 COPY . .
+RUN chmod +x ./start.docker.sh
 RUN yarn build
-ENV NODE_ENV=production
-CMD ["node", "dist/main"]
+CMD ["node","dist/main"]
