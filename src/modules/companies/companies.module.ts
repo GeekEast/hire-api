@@ -8,6 +8,8 @@ import {
   Vacancy,
   VacancySchema,
 } from 'modules/vacancies/schemas/vacancy.schema';
+import { UsersService } from 'modules/users/users.service';
+import { VacanciesService } from 'modules/vacancies/vacancies.service';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import {
       { name: Vacancy.name, schema: VacancySchema },
     ]),
   ],
-  providers: [CompaniesService],
+  providers: [CompaniesService, UsersService, VacanciesService],
   controllers: [CompaniesController],
   exports: [CompaniesService],
 })

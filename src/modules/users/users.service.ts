@@ -1,8 +1,8 @@
+import { UserSortDto } from './dto/sort.dto';
 import bcrypt from 'bcrypt';
-import { CompaniesService } from 'modules/companies/companies.service';
-import { Connection, Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create.dto';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty, pick, pickBy } from 'lodash';
 import { ListUserPaginationDto } from './dto/list.dt';
 import { UpdateUserDto } from './dto/update.dto';
@@ -16,7 +16,6 @@ import {
 } from '@nestjs/common';
 import {
   AccountPasswordNotMatchConfirmException,
-  InvalidObjectIdException,
   UserAccountExistException,
 } from 'exceptions/custom';
 
@@ -27,8 +26,6 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
-    @InjectConnection() private connection: Connection,
-    private companyService: CompaniesService,
   ) {
     this.safe_attributes = ['_id', 'username', 'name', 'role', 'company'];
     this.safe_slim_company_attributes = ['_id', 'name', 'address'];
@@ -44,8 +41,13 @@ export class UsersService {
     return this.permit(user);
   }
 
-  async findAll(listUserPagination: ListUserPaginationDto) {
-    const { limit, skip, populate } = listUserPagination;
+  async findAll(listUserPagination: {
+    limit?: number;
+    skip?: number;
+    populate?: number;
+    sort?: UserSortDto;
+  }) {
+    const { limit, skip, populate, sort } = listUserPagination;
     return await this.userModel
       .find()
       .populate(
@@ -54,6 +56,7 @@ export class UsersService {
       )
       .limit(limit)
       .skip(skip)
+      .sort(sort)
       .select(this.safe_attributes);
   }
 
@@ -68,22 +71,14 @@ export class UsersService {
     const hashed_password = await bcrypt.hash(password, 10);
     const role = 'user'; // new user will be assigned `user` role by default.
 
-    let user;
-    try {
-      const loose_create_user = {
-        ...createUserDto,
-        hashed_password,
-        role,
-        company,
-      };
-      const compacted_user = pickBy(
-        loose_create_user,
-        (c) => !isEmpty(c),
-      ) as any;
-      user = (await this.userModel.create(compacted_user)) as User;
-    } catch (err) {
-      throw new InvalidObjectIdException();
-    }
+    const loose_create_user = {
+      ...createUserDto,
+      hashed_password,
+      role,
+      company,
+    };
+    const compacted_user = pickBy(loose_create_user, (c) => !isEmpty(c)) as any;
+    const user = (await this.userModel.create(compacted_user)) as User;
     if (!user) throw new InternalServerErrorException();
     return this.permit(user);
   }
@@ -99,25 +94,17 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    try {
-      await this.userModel.findByIdAndDelete(id);
-    } catch (err) {
-      throw new InvalidObjectIdException();
-    }
+    await this.userModel.findByIdAndDelete(id);
   }
 
   async removeCompany(id: string) {
-    try {
-      return await this.userModel.findByIdAndUpdate(
-        id,
-        {
-          $unset: { company: 0 } as any,
-        },
-        { new: true, useFindAndModify: false },
-      );
-    } catch (err) {
-      throw new InvalidObjectIdException();
-    }
+    return await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        $unset: { company: 0 } as any,
+      },
+      { new: true, useFindAndModify: false },
+    );
   }
 
   async unsafeFindByUsername(userShowDto: UserShowDto) {
@@ -127,32 +114,34 @@ export class UsersService {
     return user;
   }
 
+  async removeCompanyFromUsers(
+    id: string,
+    options?: { session?: ClientSession },
+  ) {
+    const res = await this.userModel.updateMany(
+      { company: id as any },
+      { $unset: { company: 0 } as any },
+      options,
+    );
+    console.log(res);
+  }
+
   // --------------------- private methods -------------------------
 
   private async updateAnyUser(currUser: User, updateUserDto: UpdateUserDto) {
     const { id } = currUser;
-    const {
-      password,
-      confirmed_password,
-      company: currCompany,
-    } = updateUserDto;
+    const { password, confirmed_password } = updateUserDto;
     if (password !== confirmed_password)
       throw new AccountPasswordNotMatchConfirmException();
 
-    let user;
-    try {
-      // step 1: normal update, Internal Error might happen
-      user = await this.userModel.findByIdAndUpdate(
-        id,
-        pickBy(updateUserDto, (c) => !isEmpty(c)),
-        {
-          new: true,
-          useFindAndModify: false,
-        },
-      );
-    } catch (err) {
-      throw new InvalidObjectIdException();
-    }
+    const user = await this.userModel.findByIdAndUpdate(
+      id,
+      pickBy(updateUserDto, (c) => !isEmpty(c)),
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+    );
     if (!user) throw new NotFoundException();
     return this.permit(user);
   }

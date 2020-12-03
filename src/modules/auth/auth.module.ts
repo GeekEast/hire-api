@@ -1,3 +1,4 @@
+import { VacanciesService } from 'modules/vacancies/vacancies.service';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -53,6 +54,7 @@ import {
     },
     UsersService,
     CompaniesService,
+    VacanciesService,
   ],
   controllers: [AuthController],
 })

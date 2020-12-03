@@ -62,4 +62,11 @@ export class VacanciesController {
   remove(@Param('id') id: string) {
     return this.vacanciesService.remove(id);
   }
+
+  @Delete('/:id/company')
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
+  remove_company(@Param('id') id: string) {
+    return this.vacanciesService.removeCompany(id);
+  }
 }

@@ -1,4 +1,4 @@
-import { ShowCompanyVacancies } from './dto/showVacancies.dto';
+import { ShowCompanyVacancies } from './dto/vacancies';
 import { CompaniesService } from './companies.service';
 import { IndexCompanyDto } from './dto/list.dto';
 import { UpdateCompanyDto } from './dto/update.dto';
@@ -14,7 +14,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create.dto';
-import { ShowCompanyUserDto } from './dto/showUsers.dto';
+import { ShowCompanyUserDto } from './dto/users';
 
 @Controller('companies')
 export class CompaniesController {
@@ -67,27 +67,5 @@ export class CompaniesController {
   @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.companiesService.remove(id);
-  }
-
-  @Post('/:company_id/users/:user_id')
-  addUserToCompany(
-    @Param('company_id') companyId: string,
-    @Param('user_id') userId: string,
-  ) {
-    return this.companiesService.addUserToCompany({
-      companyId,
-      user: userId as any,
-    });
-  }
-
-  @Delete('/:company_id/users/:user_id')
-  removeUserFromCompany(
-    @Param('company_id') companyId: string,
-    @Param('user_id') user: string,
-  ) {
-    return this.companiesService.removeUserFromCompany({
-      companyId,
-      user,
-    });
   }
 }

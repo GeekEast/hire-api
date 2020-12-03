@@ -1,5 +1,4 @@
-import { RoleEnum } from 'modules/auth/enums/role.enum';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { Company } from 'modules/companies/schemas/company.schema';
 
 export class UpdateUserDto {
@@ -18,9 +17,5 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   company?: Company;
-
-  @IsOptional()
-  @IsString()
-  @IsEnum(RoleEnum)
-  role?: string;
+  // used is not allowed to promote himself
 }

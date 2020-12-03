@@ -1,4 +1,4 @@
-import { VacancySchema } from './../vacancies/schemas/vacancy.schema';
+import { VacancySchema } from 'modules/vacancies/schemas/vacancy.schema';
 import { VacanciesService } from 'modules/vacancies/vacancies.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CompaniesService } from './companies.service';

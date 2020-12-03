@@ -23,9 +23,9 @@
 - Follow Solid Principles.
 - May need to reference some MongoDB Modeling Patterns.
 ### What Need to Do?
+- log into New Relic.
 - sort with pagination.
 - Seeding Data Scripts (Optional)
-- Add custom global exception handlers.
 - Unit Testing (Future)
   - Currently, there are dependencies between each module, which is not ideal at all.
   - In future, we need **mock** 3rd party `providers`, `models` and so on. Bunch of workload.

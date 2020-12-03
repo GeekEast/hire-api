@@ -1,3 +1,4 @@
+import { User } from './schemas/user.schema';
 import { ListUserPaginationDto } from './dto/list.dt';
 import { Role } from 'modules/auth/decorators/roles.decorator';
 import { RoleEnum } from 'modules/auth/enums/role.enum';
@@ -13,12 +14,15 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseBoolPipe,
   Patch,
   Put,
   Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ParseSortPipe } from 'pipes/sort.pipe';
+import { UserSortDto } from './dto/sort.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -40,8 +44,11 @@ export class UsersController {
   @Get('')
   @Role(RoleEnum.Admin)
   @UseGuards(RolesGuard)
-  index(@Query() listUserPagination: ListUserPaginationDto) {
-    return this.usersService.findAll(listUserPagination);
+  index(
+    @Query() listUserPagination: ListUserPaginationDto,
+    @Query('sort', ParseSortPipe) sort: UserSortDto,
+  ) {
+    return this.usersService.findAll({ ...listUserPagination, sort });
   }
 
   @Patch('/me')

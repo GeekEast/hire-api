@@ -1,4 +1,4 @@
-import { CompanySchema } from './../companies/schemas/company.schema';
+import { CompanySchema } from 'modules/companies/schemas/company.schema';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { VacancySchema } from './schemas/vacancy.schema';
 import { Test, TestingModule } from '@nestjs/testing';

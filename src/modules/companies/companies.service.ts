@@ -1,20 +1,18 @@
-import { AddUserToCompanyDto } from './dto/addUser.dto';
-import { AddVacancyToCompanyDto } from './dto/addVacancy.dto';
+import { UsersService } from 'modules/users/users.service';
 import { Company } from './schemas/company.schema';
-import { CompanyExistException, InvalidObjectIdException } from 'exceptions/custom';
+import { CompanyExistException } from 'exceptions/custom';
 import { CreateCompanyDto } from './dto/create.dto';
 import { IndexCompanyDto } from './dto/list.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { pick } from 'lodash';
-import { RemoveUserFromCompanyDto } from './dto/removeUser.dto';
-import { RemoveVacancyFromCompanyDto } from './dto/removeVacancy.dto';
-import { ShowCompanyUserDto } from './dto/showUsers.dto';
-import { ShowCompanyVacancies } from './dto/showVacancies.dto';
-import { UpdateCompanyDto } from './dto/update.dto';
-import { User } from './../users/schemas/user.schema';
-import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Model } from 'mongoose';
+import { pick } from 'lodash';
+import { ShowCompanyUserDto } from './dto/users';
+import { ShowCompanyVacancies } from './dto/vacancies';
+import { UpdateCompanyDto } from './dto/update.dto';
+import { User } from 'modules/users/schemas/user.schema';
+import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
+import { VacanciesService } from 'modules/vacancies/vacancies.service';
 
 @Injectable()
 export class CompaniesService {
@@ -26,6 +24,9 @@ export class CompaniesService {
     @InjectModel(Company.name) private companyModel: Model<Company>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Vacancy.name) private vacancyModel: Model<Vacancy>,
+    @InjectConnection() private readonly connection: Connection,
+    private usersService: UsersService,
+    private vacanciesService: VacanciesService,
   ) {
     this.safe_attributes = ['_id', 'name', 'address', 'users', 'vacancies'];
     this.safe_slim_attributes = ['_id', 'name', 'address'];
@@ -34,12 +35,7 @@ export class CompaniesService {
   }
 
   async findById(id: string) {
-    let company;
-    try {
-      company = await this.companyModel.findById(id);
-    } catch (err) {
-      throw new InvalidObjectIdException();
-    }
+    const company = await this.companyModel.findById(id);
     if (!company) throw new NotFoundException();
     return this.permit(company);
   }
@@ -96,61 +92,19 @@ export class CompaniesService {
 
   async remove(id: string) {
     await this.findById(id);
-    await this.companyModel.findByIdAndDelete(id);
-    await this.removeCompanyFromUsers(id);
-    await this.removeCompanyFromVacancies(id);
-  }
-
-  async addUserToCompany(addUserToCompanyDto: AddUserToCompanyDto) {
-    const { companyId, user } = addUserToCompanyDto;
-    if (!companyId || !user) return;
-    return await this.companyModel.findByIdAndUpdate(
-      companyId,
-      {
-        $addToSet: { users: user },
-      },
-      { new: true, useFindAndModify: false },
-    );
-  }
-
-  async removeUserFromCompany(
-    removeUserFromCompanyDto: RemoveUserFromCompanyDto,
-  ) {
-    const { companyId, user } = removeUserFromCompanyDto;
-    if (!companyId || !user) return;
-    return await this.companyModel.findByIdAndUpdate(
-      companyId,
-      {
-        $pull: { users: user as any },
-      },
-      { new: true, useFindAndModify: false },
-    );
-  }
-
-  async addVacancyToCompany(addVacancyToCompanyDto: AddVacancyToCompanyDto) {
-    const { companyId, vacancy } = addVacancyToCompanyDto;
-    if (!companyId || !vacancy) return;
-    return await this.companyModel.findByIdAndUpdate(
-      companyId,
-      {
-        $addToSet: { vacancies: vacancy },
-      },
-      { new: true, useFindAndModify: false },
-    );
-  }
-
-  async removeVacancyFromCompany(
-    removeVacancyFromCompanyDto: RemoveVacancyFromCompanyDto,
-  ) {
-    const { companyId, vacancy } = removeVacancyFromCompanyDto;
-    if (!companyId || !vacancy) return;
-    return await this.companyModel.findByIdAndUpdate(
-      companyId,
-      {
-        $pull: { vacancies: vacancy as any },
-      },
-      { new: true, useFindAndModify: false },
-    );
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      await this.companyModel.findByIdAndDelete(id, { session });
+      await this.usersService.removeCompanyFromUsers(id, { session });
+      await this.vacanciesService.removeCompanyFromVacancies(id, { session });
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      session.endSession();
+    }
   }
 
   // --------------------- private methods -------------------------
