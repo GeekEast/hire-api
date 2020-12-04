@@ -53,6 +53,7 @@ API_PORT=
 - Docker network bridge to solve the `host.docker.internal` problem.
 - Robost sort parameter parser in Nestjs.
 - Read advanced mongo modeling pattern.
+- Data seeding using  [mongo-seeding](https://github.com/pkosiec/mongo-seeding/tree/master/examples/import-data-ts)
 - Unit Testing
   - Keep unit testing separate from each module.
   - Try to  **mock** 3rd party `providers`, `models` and so on.
