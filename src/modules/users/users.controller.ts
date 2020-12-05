@@ -95,11 +95,11 @@ export class UsersController {
     return this.usersService.findCompany(id);
   }
 
-  @Delete('/:id/company')
-  @Role(RoleEnum.Admin)
-  @UseGuards(RolesGuard)
-  @HttpCode(HttpStatus.OK)
-  remove_company(@Param('id') id: string) {
-    return this.usersService.removeCompany(id);
-  }
+  // @Delete('/:id/company')
+  // @Role(RoleEnum.Admin)
+  // @UseGuards(RolesGuard)
+  // @HttpCode(HttpStatus.OK)
+  // remove_company(@Param('id') id: string) {
+  //   return this.usersService.removeCompany(id);
+  // }
 }

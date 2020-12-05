@@ -17,7 +17,6 @@ import {
   AccountPasswordNotMatchConfirmException,
   UserAccountExistException,
 } from 'exceptions/custom';
-import { Company } from 'modules/companies/schemas/company.schema';
 import _ from 'lodash';
 
 @Injectable()

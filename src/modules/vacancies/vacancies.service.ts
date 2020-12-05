@@ -1,16 +1,16 @@
-import { VacanciesSortDto } from './dto/sort.dto';
+import _ from 'lodash';
 import { ClientSession, Model } from 'mongoose';
 import { CreateVacancyDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { pick, pickBy } from 'lodash';
 import { UpdateVacancyDto } from './dto/update.dto';
+import { VacanciesSortDto } from './dto/sort.dto';
 import { Vacancy } from './schemas/vacancy.schema';
 import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import _ from 'lodash';
 
 @Injectable()
 export class VacanciesService {
