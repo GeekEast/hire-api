@@ -64,8 +64,8 @@ db.createUser({
 ### Postman
 - Please import `test/HIRE API.postman_collection.json` into Postman v2.1 and test.
 ### Tasks
+- Seeding Service
 - Error Logging Service: New Relic for Production.
-- Docker network bridge to solve the `host.docker.internal` problem.
 - Robost sort parameter parser in Nestjs.
 - Read advanced mongo modeling pattern.
 - Unit Testing
