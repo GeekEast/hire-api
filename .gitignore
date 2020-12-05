@@ -36,3 +36,4 @@ lerna-debug.log*
 /.vscode
 *.env
 /docker-entrypoint-initdb.d
+.DS_Store
