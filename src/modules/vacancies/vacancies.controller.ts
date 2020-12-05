@@ -68,6 +68,13 @@ export class VacanciesController {
     return this.vacanciesService.remove(id);
   }
 
+  @Get('/:id/company')
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
+  find_company(@Param('id') id: string) {
+    return this.vacanciesService.findCompany(id);
+  }
+
   @Delete('/:id/company')
   @Role(RoleEnum.Admin)
   @UseGuards(RolesGuard)

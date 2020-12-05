@@ -28,10 +28,10 @@ export class CompaniesService {
     private usersService: UsersService,
     private vacanciesService: VacanciesService,
   ) {
-    this.safe_attributes = ['_id', 'name', 'address', 'users', 'vacancies'];
+    this.safe_attributes = ['id', 'name', 'address', 'users', 'vacancies'];
     this.safe_slim_attributes = ['id', 'name', 'address'];
-    this.safe_user_attributes = ['_id', 'username', 'name', 'role'];
-    this.safe_vacancy_attributes = ['_id', 'title', 'description', 'expiredAt'];
+    this.safe_user_attributes = ['id', 'username', 'name', 'role'];
+    this.safe_vacancy_attributes = ['id', 'title', 'description', 'expiredAt'];
   }
 
   async findById(id: string) {
@@ -113,19 +113,8 @@ export class CompaniesService {
 
   async remove(id: string) {
     await this.findById(id);
-    const session = await this.connection.startSession();
-    session.startTransaction();
-    try {
-      await this.companyModel.findByIdAndDelete(id, { session });
-      await this.usersService.removeCompanyFromUsers(id, { session });
-      await this.vacanciesService.removeCompanyFromVacancies(id, { session });
-      await session.commitTransaction();
-    } catch (err) {
-      await session.abortTransaction();
-      throw err;
-    } finally {
-      session.endSession();
-    }
+    const company = await this.companyModel.findByIdAndDelete(id);
+    return company;
   }
 
   // --------------------- private methods -------------------------

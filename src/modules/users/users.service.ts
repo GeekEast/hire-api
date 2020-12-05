@@ -17,6 +17,8 @@ import {
   AccountPasswordNotMatchConfirmException,
   UserAccountExistException,
 } from 'exceptions/custom';
+import { Company } from 'modules/companies/schemas/company.schema';
+import _ from 'lodash';
 
 @Injectable()
 export class UsersService {
@@ -26,8 +28,8 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<User>,
   ) {
-    this.safe_attributes = ['_id', 'username', 'name', 'role', 'company'];
-    this.safe_slim_company_attributes = ['_id', 'name', 'address'];
+    this.safe_attributes = ['id', 'username', 'name', 'role', 'company'];
+    this.safe_slim_company_attributes = ['id', 'name', 'address'];
   }
 
   async findByUsername(userShowDto: UserShowDto) {
@@ -57,6 +59,13 @@ export class UsersService {
         this.safe_slim_company_attributes,
       )
       .select(this.safe_attributes);
+  }
+
+  async findCompany(id: string) {
+    const populated_users = await this.userModel
+      .find({ _id: id })
+      .populate('company', this.safe_slim_company_attributes);
+    return _.first(populated_users).company;
   }
 
   async create(createUserDto: CreateUserDto) {

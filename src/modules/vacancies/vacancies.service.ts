@@ -10,6 +10,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import _ from 'lodash';
 
 @Injectable()
 export class VacanciesService {
@@ -17,13 +18,13 @@ export class VacanciesService {
   safe_slim_company_attributes: string[];
   constructor(@InjectModel(Vacancy.name) private vacancyModel: Model<Vacancy>) {
     this.safe_attributes = [
-      '_id',
+      'id',
       'title',
       'description',
       'expiredAt',
       'company',
     ];
-    this.safe_slim_company_attributes = ['_id', 'name', 'address'];
+    this.safe_slim_company_attributes = ['id', 'name', 'address'];
   }
 
   async findById(id: string) {
@@ -51,6 +52,12 @@ export class VacanciesService {
       .select(this.safe_attributes);
   }
 
+  async findCompany(id: string) {
+    const populated_vacancies = await this.vacancyModel
+      .find({ _id: id })
+      .populate('company', this.safe_slim_company_attributes);
+    return _.first(populated_vacancies).company;
+  }
   async create(createVacancyDto: CreateVacancyDto) {
     const compact_createVacancyDto = pickBy(
       createVacancyDto,

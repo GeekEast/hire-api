@@ -87,6 +87,14 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
+  @Get('/:id/company')
+  @Role(RoleEnum.Admin)
+  @UseGuards(RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  find_company(@Param('id') id: string) {
+    return this.usersService.findCompany(id);
+  }
+
   @Delete('/:id/company')
   @Role(RoleEnum.Admin)
   @UseGuards(RolesGuard)
