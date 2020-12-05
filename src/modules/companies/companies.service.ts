@@ -4,13 +4,10 @@ import { UsersService } from 'modules/users/users.service';
 import { Company } from './schemas/company.schema';
 import { CompanyExistException } from 'exceptions/custom';
 import { CreateCompanyDto } from './dto/create.dto';
-import { IndexCompanyDto } from './dto/list.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 import { pick } from 'lodash';
-import { ShowCompanyUserDto } from './dto/users';
-import { ShowCompanyVacancies } from './dto/vacancies';
 import { UpdateCompanyDto } from './dto/update.dto';
 import { User } from 'modules/users/schemas/user.schema';
 import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
@@ -32,7 +29,7 @@ export class CompaniesService {
     private vacanciesService: VacanciesService,
   ) {
     this.safe_attributes = ['_id', 'name', 'address', 'users', 'vacancies'];
-    this.safe_slim_attributes = ['_id', 'name', 'address'];
+    this.safe_slim_attributes = ['id', 'name', 'address'];
     this.safe_user_attributes = ['_id', 'username', 'name', 'role'];
     this.safe_vacancy_attributes = ['_id', 'title', 'description', 'expiredAt'];
   }

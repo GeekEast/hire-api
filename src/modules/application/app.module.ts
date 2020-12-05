@@ -29,6 +29,11 @@ import { VacanciesModule } from 'modules/vacancies/vacancies.module';
         return {
           uri,
           useCreateIndex: true,
+          connectionFactory: (connection) => {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            connection.plugin(require('@meanie/mongoose-to-json'));
+            return connection;
+          },
         };
       },
       inject: [ConfigService],

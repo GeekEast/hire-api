@@ -535,6 +535,11 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@meanie/mongoose-to-json@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@meanie/mongoose-to-json/-/mongoose-to-json-2.5.0.tgz#eb7c396355390b3ac61313ad9b48f52cb21f8852"
+  integrity sha512-7xAbMNLBiyVtcr2y4fkVhVye24aB3tO2/zCHVRFCWBupCPWY6bWWcIiZYhotbeOdD0hMZ7vT1TZkaRxfve6T5Q==
+
 "@nestjs/cli@^7.5.1":
   version "7.5.3"
   resolved "https://registry.yarnpkg.com/@nestjs/cli/-/cli-7.5.3.tgz#80a97faebf03e60650aab91bd77a775fc398f9bb"
