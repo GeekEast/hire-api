@@ -1,21 +1,16 @@
 import { VacanciesSortDto } from './../vacancies/dto/sort.dto';
 import { CompanySortDto } from './dto/sort.dto';
-import { UsersService } from 'modules/users/users.service';
 import { Company } from './schemas/company.schema';
 import { CompanyExistException } from 'exceptions/custom';
 import { CreateCompanyDto } from './dto/create.dto';
-import { IndexCompanyDto } from './dto/list.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { pick } from 'lodash';
-import { ShowCompanyUserDto } from './dto/users';
-import { ShowCompanyVacancies } from './dto/vacancies';
 import { UpdateCompanyDto } from './dto/update.dto';
 import { User } from 'modules/users/schemas/user.schema';
 import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
-import { VacanciesService } from 'modules/vacancies/vacancies.service';
 import { UserSortDto } from 'modules/users/dto/sort.dto';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class CompaniesService {
@@ -27,14 +22,11 @@ export class CompaniesService {
     @InjectModel(Company.name) private companyModel: Model<Company>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Vacancy.name) private vacancyModel: Model<Vacancy>,
-    @InjectConnection() private readonly connection: Connection,
-    private usersService: UsersService,
-    private vacanciesService: VacanciesService,
   ) {
-    this.safe_attributes = ['_id', 'name', 'address', 'users', 'vacancies'];
-    this.safe_slim_attributes = ['_id', 'name', 'address'];
-    this.safe_user_attributes = ['_id', 'username', 'name', 'role'];
-    this.safe_vacancy_attributes = ['_id', 'title', 'description', 'expiredAt'];
+    this.safe_attributes = ['id', 'name', 'address', 'users', 'vacancies'];
+    this.safe_slim_attributes = ['id', 'name', 'address'];
+    this.safe_user_attributes = ['id', 'username', 'name', 'role'];
+    this.safe_vacancy_attributes = ['id', 'title', 'description', 'expiredAt'];
   }
 
   async findById(id: string) {
@@ -116,19 +108,8 @@ export class CompaniesService {
 
   async remove(id: string) {
     await this.findById(id);
-    const session = await this.connection.startSession();
-    session.startTransaction();
-    try {
-      await this.companyModel.findByIdAndDelete(id, { session });
-      await this.usersService.removeCompanyFromUsers(id, { session });
-      await this.vacanciesService.removeCompanyFromVacancies(id, { session });
-      await session.commitTransaction();
-    } catch (err) {
-      await session.abortTransaction();
-      throw err;
-    } finally {
-      session.endSession();
-    }
+    const company = await this.companyModel.findByIdAndDelete(id);
+    return company;
   }
 
   // --------------------- private methods -------------------------

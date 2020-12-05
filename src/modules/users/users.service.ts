@@ -1,12 +1,12 @@
-import { UserSortDto } from './dto/sort.dto';
 import bcrypt from 'bcrypt';
 import { ClientSession, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { isEmpty, pick, pickBy } from 'lodash';
+import { pick, pickBy } from 'lodash';
 import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
 import { UserShowDto } from './dto/show.dto';
+import { UserSortDto } from './dto/sort.dto';
 
 import {
   Injectable,
@@ -17,6 +17,7 @@ import {
   AccountPasswordNotMatchConfirmException,
   UserAccountExistException,
 } from 'exceptions/custom';
+import _ from 'lodash';
 
 @Injectable()
 export class UsersService {
@@ -26,8 +27,8 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<User>,
   ) {
-    this.safe_attributes = ['_id', 'username', 'name', 'role', 'company'];
-    this.safe_slim_company_attributes = ['_id', 'name', 'address'];
+    this.safe_attributes = ['id', 'username', 'name', 'role', 'company'];
+    this.safe_slim_company_attributes = ['id', 'name', 'address'];
   }
 
   async findByUsername(userShowDto: UserShowDto) {
@@ -59,6 +60,13 @@ export class UsersService {
       .select(this.safe_attributes);
   }
 
+  async findCompany(id: string) {
+    const populated_users = await this.userModel
+      .find({ _id: id })
+      .populate('company', this.safe_slim_company_attributes);
+    return _.first(populated_users).company;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const { username, password, confirmed_password, company } = createUserDto;
 
@@ -76,7 +84,10 @@ export class UsersService {
       role,
       company,
     };
-    const compacted_user = pickBy(loose_create_user, (c) => !isEmpty(c)) as any;
+    const compacted_user = pickBy(
+      loose_create_user,
+      (c) => c !== undefined && c !== null && c !== '',
+    ) as any;
     const user = (await this.userModel.create(compacted_user)) as User;
     if (!user) throw new InternalServerErrorException();
     return this.permit(user);
@@ -135,7 +146,7 @@ export class UsersService {
 
     const user = await this.userModel.findByIdAndUpdate(
       id,
-      pickBy(updateUserDto, (c) => !isEmpty(c)),
+      pickBy(updateUserDto, (c) => c !== undefined && c !== null && c !== ''),
       {
         new: true,
         useFindAndModify: false,
