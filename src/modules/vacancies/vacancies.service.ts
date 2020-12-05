@@ -2,8 +2,7 @@ import { VacanciesSortDto } from './dto/sort.dto';
 import { ClientSession, Model } from 'mongoose';
 import { CreateVacancyDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { isEmpty, pick, pickBy } from 'lodash';
-import { ListVacancyPaginationDto } from './dto/list.dto';
+import { pick, pickBy } from 'lodash';
 import { UpdateVacancyDto } from './dto/update.dto';
 import { Vacancy } from './schemas/vacancy.schema';
 import {
@@ -55,7 +54,7 @@ export class VacanciesService {
   async create(createVacancyDto: CreateVacancyDto) {
     const compact_createVacancyDto = pickBy(
       createVacancyDto,
-      (c) => !isEmpty(c),
+      (c) => c !== undefined && c !== null && c !== '',
     ) as any;
     const vacancy = await this.vacancyModel.create(compact_createVacancyDto);
     if (!vacancy) throw new InternalServerErrorException();
@@ -65,7 +64,10 @@ export class VacanciesService {
   async update(id: string, updateVacancyDto: UpdateVacancyDto) {
     const vacancy = await this.vacancyModel.findByIdAndUpdate(
       id,
-      pickBy(updateVacancyDto, (c) => !isEmpty(c)),
+      pickBy(
+        updateVacancyDto,
+        (c) => c !== undefined && c !== null && c !== '',
+      ),
       {
         new: true,
         useFindAndModify: false,

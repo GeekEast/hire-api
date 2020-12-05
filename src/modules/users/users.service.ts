@@ -1,12 +1,12 @@
-import { UserSortDto } from './dto/sort.dto';
 import bcrypt from 'bcrypt';
 import { ClientSession, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { isEmpty, pick, pickBy } from 'lodash';
+import { pick, pickBy } from 'lodash';
 import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
 import { UserShowDto } from './dto/show.dto';
+import { UserSortDto } from './dto/sort.dto';
 
 import {
   Injectable,
@@ -76,7 +76,10 @@ export class UsersService {
       role,
       company,
     };
-    const compacted_user = pickBy(loose_create_user, (c) => !isEmpty(c)) as any;
+    const compacted_user = pickBy(
+      loose_create_user,
+      (c) => c !== undefined && c !== null && c !== '',
+    ) as any;
     const user = (await this.userModel.create(compacted_user)) as User;
     if (!user) throw new InternalServerErrorException();
     return this.permit(user);
@@ -135,7 +138,7 @@ export class UsersService {
 
     const user = await this.userModel.findByIdAndUpdate(
       id,
-      pickBy(updateUserDto, (c) => !isEmpty(c)),
+      pickBy(updateUserDto, (c) => c !== undefined && c !== null && c !== ''),
       {
         new: true,
         useFindAndModify: false,
