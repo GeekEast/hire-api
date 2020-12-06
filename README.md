@@ -49,7 +49,6 @@ API_PORT=
 ### Postman
 - Please import `test/HIRE API.postman_collection.json` into Postman v2.1 and test.
 ### Tasks
-- Seeding Service
 - Error Logging Service: New Relic for Production.
 - Robost sort parameter parser in Nestjs.
 - Read advanced mongo modeling pattern.
