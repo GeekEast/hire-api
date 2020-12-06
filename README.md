@@ -31,7 +31,7 @@ JWT_EXPIRE=1d
 # NESTJS
 API_PORT=
 ```
-- **Docker**: You need `.docker.development.env` to set set env vars. To start, run `docker-compose up -d`
+- **Docker**: You need `.docker.development.env` to set set env vars.
 ```sh
 # MongDB
 MONGODB_HOST=<container_name of mongo service>
@@ -45,7 +45,7 @@ JWT_EXPIRE=1d
 # NEST
 API_PORT=
 ```
-- Please make sure your local `API_PORT` is not used by other program.
+- **Start**: `docker-compose --env-file .docker.development.env up -d`
 ### Postman
 - Please import `test/HIRE API.postman_collection.json` into Postman v2.1 and test.
 ### Tasks

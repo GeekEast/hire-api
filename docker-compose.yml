@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/user/src/app # real-time folder mapping
     ports:
-      - 3000:3000
+      - $API_PORT:$API_PORT
     command: yarn start:dev
     env_file:
       - .docker.development.env
@@ -19,7 +19,7 @@ services:
     env_file:
       - .docker.development.env
     ports:
-      - 27017:27017
+      - $MONGODB_PORT:$MONGODB_PORT
     volumes:
       - db-data:/data/db
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
