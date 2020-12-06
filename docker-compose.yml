@@ -6,7 +6,6 @@ services:
     build: .
     volumes:
       - .:/user/src/app # real-time folder mapping
-      - /usr/src/app/node_modules
     ports:
       - 3000:3000
     command: yarn start:dev
