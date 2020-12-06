@@ -9,5 +9,6 @@ export class SeedController {
   @SkipJwt()
   async seed() {
     await this.seedService.seed();
+    return 'PreditiveHire is launched by Bob and Mark today!';
   }
 }
