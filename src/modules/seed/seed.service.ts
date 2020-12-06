@@ -1,4 +1,4 @@
-import { CompaniesService } from './../companies/companies.service';
+import { CompaniesService } from 'modules/companies/companies.service';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'modules/users/users.service';
 

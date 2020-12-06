@@ -7,7 +7,7 @@ export class SeedController {
   constructor(private readonly seedService: SeedService) {}
   @Get()
   @SkipJwt()
-  hello() {
-    this.seedService.seed();
+  async seed() {
+    await this.seedService.seed();
   }
 }
