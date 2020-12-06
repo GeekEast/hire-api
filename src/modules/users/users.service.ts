@@ -18,6 +18,7 @@ import {
   UserAccountExistException,
 } from 'exceptions/custom';
 import _ from 'lodash';
+import { AdminUpdateUserDto } from './dto/adminUpdate.dto';
 
 @Injectable()
 export class UsersService {
@@ -98,9 +99,9 @@ export class UsersService {
     return await this.updateAnyUser(currUser, updateUserDto);
   }
 
-  async adminUpdate(userId: string, updateUserDto: UpdateUserDto) {
+  async adminUpdate(userId: string, adminUpdateUserDto: AdminUpdateUserDto) {
     const user = await this.unsafeFindById(userId);
-    return this.updateAnyUser(user, updateUserDto);
+    return this.updateAnyUser(user, adminUpdateUserDto);
   }
 
   async remove(id: string) {

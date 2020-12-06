@@ -1,7 +1,8 @@
-import { IsOptional, IsString } from 'class-validator';
 import { Company } from 'modules/companies/schemas/company.schema';
+import { IsOptional, IsString } from 'class-validator';
+import { RoleEnum } from 'modules/auth/enums/role.enum';
 
-export class UpdateUserDto {
+export class AdminUpdateUserDto {
   @IsString()
   @IsOptional()
   name?: string;
@@ -17,4 +18,8 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   company?: Company;
+
+  @IsString()
+  @IsOptional()
+  role?: string;
 }

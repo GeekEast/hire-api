@@ -7,6 +7,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from 'modules/users/users.module';
 import { VacanciesModule } from 'modules/vacancies/vacancies.module';
+import { SeedModule } from 'modules/seed/seed.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { VacanciesModule } from 'modules/vacancies/vacancies.module';
     UsersModule,
     VacanciesModule,
     AuthModule,
+    SeedModule,
   ],
   controllers: [AppController],
 })

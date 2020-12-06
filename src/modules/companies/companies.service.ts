@@ -29,6 +29,12 @@ export class CompaniesService {
     this.safe_vacancy_attributes = ['id', 'title', 'description', 'expiredAt'];
   }
 
+  async findByName(name: string) {
+    const company = await this.companyModel.find({ name });
+    if (!company) throw new NotFoundException();
+    return this.permit(company);
+  }
+
   async findById(id: string) {
     const company = await this.companyModel.findById(id);
     if (!company) throw new NotFoundException();
