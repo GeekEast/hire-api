@@ -12,6 +12,8 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "incremental": true,
+    "allowJs": true
   }
 }

@@ -98,7 +98,7 @@ export class CompaniesService {
     const { name } = createCompanyDto;
     const exist_company = await this.companyModel.findOne({ name });
     if (exist_company) throw new CompanyExistException();
-    const company = await new this.companyModel(createCompanyDto).save();
+    const company = await this.companyModel.create(createCompanyDto);
     return this.permit(company);
   }
 
