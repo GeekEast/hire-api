@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VacanciesController } from './vacancies.controller';
 import { VacancySchema } from './schemas/vacancy.schema';
 import { CompanySchema } from 'modules/companies/schemas/company.schema';
+import { UserSchema } from 'modules/users/schemas/user.schema';
 
 describe('VacanciesController', () => {
   let controller: VacanciesController;
@@ -16,6 +17,7 @@ describe('VacanciesController', () => {
         CompaniesService,
         { provide: 'VacancyModel', useValue: VacancySchema },
         { provide: 'CompanyModel', useValue: CompanySchema },
+        { provide: 'UserModel', useValue: UserSchema },
       ],
     }).compile();
 

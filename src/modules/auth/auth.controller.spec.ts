@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { JwtService } from '@nestjs/jwt';
 import { UserSchema } from 'modules/users/schemas/user.schema';
 import { CompanySchema } from 'modules/companies/schemas/company.schema';
+import { VacancySchema } from 'modules/vacancies/schemas/vacancy.schema';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -21,6 +22,7 @@ describe('AuthController', () => {
         { provide: 'UserModel', useValue: UserSchema },
         { provide: 'CompanyModel', useValue: CompanySchema },
         { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
+        { provide: 'VacancyModel', useValue: VacancySchema },
       ],
     }).compile();
 

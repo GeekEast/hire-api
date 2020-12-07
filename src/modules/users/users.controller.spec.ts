@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import { UserSchema } from './schemas/user.schema';
 import { CompanySchema } from 'modules/companies/schemas/company.schema';
 import { CompaniesService } from 'modules/companies/companies.service';
+import { VacancySchema } from 'modules/vacancies/schemas/vacancy.schema';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -16,6 +17,7 @@ describe('UsersController', () => {
         CompaniesService,
         { provide: 'UserModel', useValue: UserSchema },
         { provide: 'CompanyModel', useValue: CompanySchema },
+        { provide: 'VacancyModel', useValue: VacancySchema },
       ],
     }).compile();
 

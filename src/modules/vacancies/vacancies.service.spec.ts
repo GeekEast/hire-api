@@ -3,6 +3,7 @@ import { CompaniesService } from 'modules/companies/companies.service';
 import { VacancySchema } from './schemas/vacancy.schema';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VacanciesService } from './vacancies.service';
+import { UserSchema } from 'modules/users/schemas/user.schema';
 
 describe('VacanciesService', () => {
   let service: VacanciesService;
@@ -14,6 +15,7 @@ describe('VacanciesService', () => {
         CompaniesService,
         { provide: 'VacancyModel', useValue: VacancySchema },
         { provide: 'CompanyModel', useValue: CompanySchema },
+        { provide: 'UserModel', useValue: UserSchema },
       ],
     }).compile();
 

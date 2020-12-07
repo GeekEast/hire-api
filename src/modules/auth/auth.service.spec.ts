@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { UserSchema } from 'modules/users/schemas/user.schema';
 import { CompaniesService } from 'modules/companies/companies.service';
 import { CompanySchema } from 'modules/companies/schemas/company.schema';
+import { VacancySchema } from 'modules/vacancies/schemas/vacancy.schema';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -19,6 +20,7 @@ describe('AuthService', () => {
         { provide: 'UserModel', useValue: UserSchema },
         { provide: 'CompanyModel', useValue: CompanySchema },
         { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
+        { provide: 'VacancyModel', useValue: VacancySchema },
       ],
     }).compile();
 
