@@ -1,7 +1,9 @@
+import _ from 'lodash';
 import bcrypt from 'bcrypt';
-import { ClientSession, Model } from 'mongoose';
+import { AdminUpdateUserDto } from './dto/adminUpdate.dto';
 import { CreateUserDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { pick, pickBy } from 'lodash';
 import { UpdateUserDto } from './dto/update.dto';
 import { User } from './schemas/user.schema';
@@ -17,8 +19,6 @@ import {
   AccountPasswordNotMatchConfirmException,
   UserAccountExistException,
 } from 'exceptions/custom';
-import _ from 'lodash';
-import { AdminUpdateUserDto } from './dto/adminUpdate.dto';
 
 @Injectable()
 export class UsersService {
@@ -123,18 +123,6 @@ export class UsersService {
     const user = await this.userModel.findOne({ username });
     if (!user) throw new NotFoundException();
     return user;
-  }
-
-  async removeCompanyFromUsers(
-    id: string,
-    options?: { session?: ClientSession },
-  ) {
-    const res = await this.userModel.updateMany(
-      { company: id as any },
-      { $unset: { company: 0 } as any },
-      options,
-    );
-    console.log(res);
   }
 
   // --------------------- private methods -------------------------

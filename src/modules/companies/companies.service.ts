@@ -5,7 +5,7 @@ import { CompanyExistException } from 'exceptions/custom';
 import { CreateCompanyDto } from './dto/create.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { pick } from 'lodash';
+import { isEmpty, pick } from 'lodash';
 import { UpdateCompanyDto } from './dto/update.dto';
 import { User } from 'modules/users/schemas/user.schema';
 import { Vacancy } from 'modules/vacancies/schemas/vacancy.schema';
@@ -31,7 +31,7 @@ export class CompaniesService {
 
   async findByName(name: string) {
     const company = await this.companyModel.find({ name });
-    if (!company) throw new NotFoundException();
+    if (isEmpty(company)) throw new NotFoundException();
     return this.permit(company);
   }
 
@@ -121,21 +121,5 @@ export class CompaniesService {
   // --------------------- private methods -------------------------
   private permit(company) {
     return pick(company, this.safe_slim_attributes);
-  }
-
-  private async removeCompanyFromUsers(id: string) {
-    const res = await this.userModel.updateMany(
-      { company: id as any },
-      { $unset: { company: 0 } as any },
-    );
-    console.log(res);
-  }
-
-  private async removeCompanyFromVacancies(id: string) {
-    const res = await this.vacancyModel.updateMany(
-      { company: id as any },
-      { $unset: { company: 0 } as any },
-    );
-    console.log(res);
   }
 }

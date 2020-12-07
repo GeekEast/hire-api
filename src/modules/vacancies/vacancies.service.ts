@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import { ClientSession, Model } from 'mongoose';
 import { CreateVacancyDto } from './dto/create.dto';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { pick, pickBy } from 'lodash';
 import { UpdateVacancyDto } from './dto/update.dto';
 import { VacanciesSortDto } from './dto/sort.dto';
@@ -96,18 +96,6 @@ export class VacanciesService {
       },
       { new: true, useFindAndModify: false },
     );
-  }
-
-  async removeCompanyFromVacancies(
-    id: string,
-    options?: { session?: ClientSession },
-  ) {
-    const res = await this.vacancyModel.updateMany(
-      { company: id as any },
-      { $unset: { company: 0 } as any },
-      options,
-    );
-    console.log(res);
   }
 
   // --------------------- private methods -------------------------

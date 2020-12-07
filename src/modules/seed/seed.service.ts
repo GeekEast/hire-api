@@ -15,20 +15,14 @@ export class SeedService {
   }
 
   async seedCompany() {
-    let company;
     try {
-      company = this.companiesService.findByName('PredictiveHire');
+      return await this.companiesService.findByName('PredictiveHire');
     } catch (err) {
-      console.log('not found');
-    }
-    if (!company) {
-      const { id } = await this.companiesService.create({
+      return await this.companiesService.create({
         name: 'PredictiveHire',
         address: '15 Newton St',
       });
-      return id;
     }
-    return company.id;
   }
 
   async seedUsers(company: any) {
